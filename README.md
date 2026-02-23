@@ -210,8 +210,8 @@ npm start
 
 # 👨‍💻 Team Members
 
-| S.No | Name              | Role                     | Responsibilities |
-|------|------------------|-------------------------  |------------------|
+| S.No | Name             | Role                      |           Responsibilities                     |
+|------|------------------|-------------------------  |---------------------------------------------   |
 | 1    | Subham Gadatia   | Team Lead & Backend Dev   | System architecture, backend APIs, integration |
 | 2    | Rabi Narayan     | ML Engineer               | Model development, training, evaluation        |
 | 3    | Asutosh          | Frontend Developer        | Dashboard UI, visualization, user interface    |
@@ -223,8 +223,8 @@ npm start
 
 For queries or collaboration:
 
-- 📧 Email: your-email@example.com  
-- 🌐 GitHub: https://github.com/your-username  
+- 📧 Email: subhamgadatia2006@gmail.com
+- 🌐 GitHub: https://github.com/subhamgadatia2006-afk 
 
 ---
 
