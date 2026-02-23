@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PDS Leak Detection Platform - Official Government Website Registration">
+  <title>Register - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .auth-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(135deg, #1a4d7a 0%, #2d5f8d 100%);
+      padding: 2rem 0;
+    }
+
+    .auth-box {
+      background-color: var(--white);
+      padding: 3rem;
+      border-radius: 8px;
+      box-shadow: var(--shadow-lg);
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .auth-header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    .auth-header .logo-icon {
+      width: 60px;
+      height: 60px;
+      margin: 0 auto 1rem;
+      font-size: 2rem;
+    }
+
+    .auth-header h1 {
+      font-size: 1.8rem;
+      color: var(--primary-color);
+      margin-bottom: 0.25rem;
+    }
+
+    .auth-header p {
+      color: var(--text-secondary);
+      margin-bottom: 0;
+      font-size: var(--font-size-sm);
+    }
+
+    .auth-form input,
+    .auth-form select {
+      padding: 0.9rem !important;
+      margin-bottom: 0.75rem;
+    }
+
+    .auth-form button {
+      width: 100%;
+      padding: 0.9rem;
+      font-size: 1rem;
+      margin-top: 1.5rem;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-color);
+    }
+
+    .auth-footer a {
+      color: var(--primary-color);
+      text-decoration: none;
+      font-weight: 500;
+    }
+
+    .auth-footer a:hover {
+      text-decoration: underline;
+    }
+
+    .alert {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label .required {
+      color: var(--danger-color);
+    }
+
+    @media (max-width: 480px) {
+      .auth-box {
+        padding: 1.5rem;
+      }
+
+      .auth-header h1 {
+        font-size: 1.5rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <div class="header-top">
+      <div class="container">
+        <div class="govt-info">
+          <span>🇮🇳 Government of India</span>
+          <span>Ministry of Consumer Affairs, Public Distribution & Food</span>
+        </div>
+        <span id="current-time"></span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="auth-container">
+    <div class="auth-box">
+      <div class="auth-header">
+        <div class="logo-icon">🛡️</div>
+        <h1>Create Your Account</h1>
+        <p>Join the Leak Detection Platform</p>
+      </div>
+
+      <div id="alert-container"></div>
+
+      <form id="register-form" class="auth-form">
+        <div class="form-group">
+          <label for="username">Username <span class="required">*</span></label>
+          <input type="text" id="username" name="username" required placeholder="Choose a username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address <span class="required">*</span></label>
+          <input type="email" id="email" name="email" required placeholder="Enter your email address" autocomplete="email">
+        </div>
+
+        <div class="form-group">
+          <label for="password">Password <span class="required">*</span></label>
+          <input type="password" id="password" name="password" required placeholder="Create a strong password" autocomplete="new-password">
+          <small style="color: #999;">Password must be at least 6 characters</small>
+        </div>
+
+        <div class="form-group">
+          <label for="confirm-password">Confirm Password <span class="required">*</span></label>
+          <input type="password" id="confirm-password" name="confirm-password" required placeholder="Confirm your password" autocomplete="new-password">
+        </div>
+
+        <div class="form-group">
+          <label for="role">Role <span class="required">*</span></label>
+          <select id="role" name="role" required>
+            <option value="">Select your role</option>
+            <option value="shop_manager">Shop Manager</option>
+            <option value="distribution_center">Distribution Center</option>
+            <option value="analyst">Analyst</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="shop-id">Shop ID (Optional)</label>
+          <input type="number" id="shop-id" name="shop-id" placeholder="If applicable, enter your shop ID">
+        </div>
+
+        <button type="submit" class="btn btn-primary">Create  Account</button>
+      </form>
+
+      <div class="auth-footer">
+        <p>Already have an account? <a href="login.html">Login here</a></p>
+        <p style="font-size: 0.8rem; color: #999; margin-top: 1rem;">Secure Government Portal</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer class="no-print">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-section">
+          <h4>About PDS</h4>
+          <a href="#">Overview</a>
+          <a href="#">Mission</a>
+          <a href="#">Features</a>
+        </div>
+        <div class="footer-section">
+          <h4>Support</h4>
+          <a href="#">Help Center</a>
+          <a href="#">Contact Us</a>
+          <a href="#">FAQ</a>
+        </div>
+        <div class="footer-section">
+          <h4>Legal</h4>
+          <a href="#">Privacy Policy</a>
+          <a href="#">Terms of Service</a>
+          <a href="#">Security</a>
+        </div>
+        <div class="footer-section">
+          <h4>Government</h4>
+          <a href="#">Ministry Official</a>
+          <a href="#">Portal</a>
+          <a href="#">Citizen Information</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 Government of India. All rights reserved.</p>
+        <p>This is an official government website of the Ministry of Consumer Affairs, Public Distribution & Food.</p>
+      </div>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Update current time
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleString('en-IN');
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Handle registration form submission
+    document.getElementById('register-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+      const role = document.getElementById('role').value;
+      const shopId = document.getElementById('shop-id').value;
+      const alertContainer = document.getElementById('alert-container');
+
+      // Validate passwords match
+      if (password !== confirmPassword) {
+        showAlert('Passwords do not match', 'danger', alertContainer);
+        return;
+      }
+
+      if (password.length < 6) {
+        showAlert('Password must be at least 6 characters long', 'danger', alertContainer);
+        return;
+      }
+
+      try {
+        const result = await api.register(
+          username,
+          email,
+          password,
+          role,
+          shopId ? parseInt(shopId) : null
+        );
+
+        showAlert('Registration successful! Redirecting to login...', 'success', alertContainer);
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 1500);
+      } catch (error) {
+        showAlert(error.message, 'danger', alertContainer);
+      }
+    });
+
+    function showAlert(message, type, container) {
+      container.innerHTML = `<div class="alert alert-${type}">${message}</div>`;
+      container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  </script>
+</body>
+</html>

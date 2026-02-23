@@ -1,0 +1,508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Data Ingestion - PDS Leak Detection Platform">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Data Ingestion - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Data Ingestion</h1>
+        <p>Ingest stock, biometric, and delivery data</p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Data Ingestion</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Tabs Navigation -->
+      <div class="card">
+        <div class="card-body">
+          <div style="display: flex; gap: 1rem; border-bottom: 2px solid #f0f0f0; margin-bottom: 2rem;">
+            <button class="tab-btn active" data-tab="stock-tab" onclick="switchTab(this, 'stock-tab')">
+              📦 Stock Data
+            </button>
+            <button class="tab-btn" data-tab="biometric-tab" onclick="switchTab(this, 'biometric-tab')">
+              👤 Biometric Logs
+            </button>
+            <button class="tab-btn" data-tab="delivery-tab" onclick="switchTab(this, 'delivery-tab')">
+              🚚 Delivery Schedules
+            </button>
+          </div>
+
+          <!-- Stock Data Tab -->
+          <div id="stock-tab" class="tab-content active">
+            <h3>📦 Ingest Stock Data</h3>
+            <form id="stock-form" onsubmit="handleStockSubmit(event)">
+              <div class="form-group">
+                <label for="stock-shop-id">Shop ID *</label>
+                <input type="number" id="stock-shop-id" required min="1" placeholder="Enter shop ID">
+              </div>
+
+              <div id="stock-items-container">
+                <div class="stock-item" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                  <h4>Item 1</h4>
+                  <div class="form-group">
+                    <label for="item-code-0">Item Code *</label>
+                    <input type="text" class="item-code" placeholder="e.g., RICE001" required>
+                  </div>
+                  <div class="form-group">
+                    <label for="item-name-0">Item Name *</label>
+                    <input type="text" class="item-name" placeholder="e.g., Rice 10kg" required>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Quantity Received *</label>
+                      <input type="number" class="qty-received" placeholder="0" required min="0">
+                    </div>
+                    <div class="form-group">
+                      <label>Quantity Sold *</label>
+                      <input type="number" class="qty-sold" placeholder="0" required min="0">
+                    </div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Quantity Remaining *</label>
+                      <input type="number" class="qty-remaining" placeholder="0" required min="0">
+                    </div>
+                    <div class="form-group">
+                      <label>Expected Quantity *</label>
+                      <input type="number" class="qty-expected" placeholder="0" required min="0">
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <button type="button" class="btn btn-secondary" onclick="addStockItem()">+ Add Another Item</button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Submit Stock Data</button>
+                <button type="button" class="btn btn-secondary" onclick="clearStockForm()">Clear Form</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Biometric Logs Tab -->
+          <div id="biometric-tab" class="tab-content">
+            <h3>👤 Ingest Biometric Logs</h3>
+            <form id="biometric-form" onsubmit="handleBiometricSubmit(event)">
+              <div class="form-group">
+                <label for="biometric-shop-id">Shop ID *</label>
+                <input type="number" id="biometric-shop-id" required min="1" placeholder="Enter shop ID">
+              </div>
+
+              <div id="biometric-logs-container">
+                <div class="biometric-log" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                  <h4>Employee 1</h4>
+                  <div class="form-group">
+                    <label>Employee ID *</label>
+                    <input type="text" class="emp-id" placeholder="e.g., EMP001" required>
+                  </div>
+                  <div class="form-group">
+                    <label>Employee Name *</label>
+                    <input type="text" class="emp-name" placeholder="e.g., John Doe" required>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Check-in Time *</label>
+                      <input type="datetime-local" class="check-in-time" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Check-out Time *</label>
+                      <input type="datetime-local" class="check-out-time" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Status *</label>
+                    <select class="emp-status" required>
+                      <option value="">Select Status</option>
+                      <option value="present">Present</option>
+                      <option value="absent">Absent</option>
+                      <option value="late">Late</option>
+                      <option value="leave">Leave</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <button type="button" class="btn btn-secondary" onclick="addBiometricLog()">+ Add Another Employee</button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Submit Biometric Data</button>
+                <button type="button" class="btn btn-secondary" onclick="clearBiometricForm()">Clear Form</button>
+              </div>
+            </form>
+          </div>
+
+          <!-- Delivery Schedules Tab -->
+          <div id="delivery-tab" class="tab-content">
+            <h3>🚚 Ingest Delivery Schedules</h3>
+            <form id="delivery-form" onsubmit="handleDeliverySubmit(event)">
+              <div class="form-group">
+                <label for="delivery-shop-id">Shop ID *</label>
+                <input type="number" id="delivery-shop-id" required min="1" placeholder="Enter shop ID">
+              </div>
+
+              <div id="delivery-items-container">
+                <div class="delivery-item" style="border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;">
+                  <h4>Delivery 1</h4>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Delivery ID *</label>
+                      <input type="text" class="del-id" placeholder="e.g., DEL001" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Item Code *</label>
+                      <input type="text" class="del-item-code" placeholder="e.g., RICE001" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Item Name *</label>
+                    <input type="text" class="del-item-name" placeholder="e.g., Rice 10kg" required>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Scheduled Quantity *</label>
+                      <input type="number" class="del-scheduled-qty" placeholder="0" required min="0">
+                    </div>
+                    <div class="form-group">
+                      <label>Delivered Quantity *</label>
+                      <input type="number" class="del-delivered-qty" placeholder="0" required min="0">
+                    </div>
+                  </div>
+                  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                    <div class="form-group">
+                      <label>Scheduled Date *</label>
+                      <input type="datetime-local" class="del-scheduled-date" required>
+                    </div>
+                    <div class="form-group">
+                      <label>Actual Delivery Date *</label>
+                      <input type="datetime-local" class="del-actual-date" required>
+                    </div>
+                  </div>
+                  <div class="form-group">
+                    <label>Status *</label>
+                    <select class="del-status" required>
+                      <option value="">Select Status</option>
+                      <option value="scheduled">Scheduled</option>
+                      <option value="in-transit">In Transit</option>
+                      <option value="delivered">Delivered</option>
+                      <option value="cancelled">Cancelled</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div style="display: flex; gap: 1rem; margin: 1rem 0;">
+                <button type="button" class="btn btn-secondary" onclick="addDeliveryItem()">+ Add Another Delivery</button>
+              </div>
+
+              <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+                <button type="submit" class="btn btn-primary">Submit Delivery Data</button>
+                <button type="button" class="btn btn-secondary" onclick="clearDeliveryForm()">Clear Form</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Ingestions -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Ingestions</h3>
+        </div>
+        <div class="card-body">
+          <div style="padding: 2rem; text-align: center; color: #999;">
+            Data ingestions will appear here
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Initialize page
+    initializePage();
+    setupAuthenticationSecurity();
+
+    // Tab switching
+    function switchTab(button, tabId) {
+      // Remove active class from all buttons and tabs
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      
+      // Add active class to clicked button and corresponding tab
+      button.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // Stock Data Handling
+    let stockItemCount = 1;
+    function addStockItem() {
+      stockItemCount++;
+      const container = document.getElementById('stock-items-container');
+      const newItem = document.createElement('div');
+      newItem.className = 'stock-item';
+      newItem.style.cssText = 'border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;';
+      newItem.innerHTML = `
+        <h4>Item ${stockItemCount}</h4>
+        <div class="form-group">
+          <label>Item Code *</label>
+          <input type="text" class="item-code" placeholder="e.g., RICE001" required>
+        </div>
+        <div class="form-group">
+          <label>Item Name *</label>
+          <input type="text" class="item-name" placeholder="e.g., Rice 10kg" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Quantity Received *</label>
+            <input type="number" class="qty-received" placeholder="0" required min="0">
+          </div>
+          <div class="form-group">
+            <label>Quantity Sold *</label>
+            <input type="number" class="qty-sold" placeholder="0" required min="0">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Quantity Remaining *</label>
+            <input type="number" class="qty-remaining" placeholder="0" required min="0">
+          </div>
+          <div class="form-group">
+            <label>Expected Quantity *</label>
+            <input type="number" class="qty-expected" placeholder="0" required min="0">
+          </div>
+        </div>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="margin-top: 0.5rem;">Remove</button>
+      `;
+      container.appendChild(newItem);
+    }
+
+    function clearStockForm() {
+      document.getElementById('stock-form').reset();
+      const container = document.getElementById('stock-items-container');
+      container.querySelectorAll('.stock-item').forEach((item, idx) => {
+        if (idx > 0) item.remove();
+      });
+      stockItemCount = 1;
+    }
+
+    async function handleStockSubmit(event) {
+      event.preventDefault();
+      const shopId = parseInt(document.getElementById('stock-shop-id').value);
+      const items = [];
+
+      document.querySelectorAll('.stock-item').forEach(item => {
+        items.push({
+          item_code: item.querySelector('.item-code').value,
+          item_name: item.querySelector('.item-name').value,
+          quantity_received: parseInt(item.querySelector('.qty-received').value),
+          quantity_sold: parseInt(item.querySelector('.qty-sold').value),
+          quantity_remaining: parseInt(item.querySelector('.qty-remaining').value),
+          expected_quantity: parseInt(item.querySelector('.qty-expected').value)
+        });
+      });
+
+      try {
+        const result = await api.ingestStockData(shopId, items);
+        showSuccess(`Stock data ingested successfully! (${result.success_count} records)`);
+        clearStockForm();
+      } catch (error) {
+        showError(error.message || 'Error ingesting stock data');
+      }
+    }
+
+    // Biometric Logs Handling
+    let biometricLogCount = 1;
+    function addBiometricLog() {
+      biometricLogCount++;
+      const container = document.getElementById('biometric-logs-container');
+      const newLog = document.createElement('div');
+      newLog.className = 'biometric-log';
+      newLog.style.cssText = 'border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;';
+      newLog.innerHTML = `
+        <h4>Employee ${biometricLogCount}</h4>
+        <div class="form-group">
+          <label>Employee ID *</label>
+          <input type="text" class="emp-id" placeholder="e.g., EMP001" required>
+        </div>
+        <div class="form-group">
+          <label>Employee Name *</label>
+          <input type="text" class="emp-name" placeholder="e.g., John Doe" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Check-in Time *</label>
+            <input type="datetime-local" class="check-in-time" required>
+          </div>
+          <div class="form-group">
+            <label>Check-out Time *</label>
+            <input type="datetime-local" class="check-out-time" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Status *</label>
+          <select class="emp-status" required>
+            <option value="">Select Status</option>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+            <option value="late">Late</option>
+            <option value="leave">Leave</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="margin-top: 0.5rem;">Remove</button>
+      `;
+      container.appendChild(newLog);
+    }
+
+    function clearBiometricForm() {
+      document.getElementById('biometric-form').reset();
+      const container = document.getElementById('biometric-logs-container');
+      container.querySelectorAll('.biometric-log').forEach((log, idx) => {
+        if (idx > 0) log.remove();
+      });
+      biometricLogCount = 1;
+    }
+
+    async function handleBiometricSubmit(event) {
+      event.preventDefault();
+      const shopId = parseInt(document.getElementById('biometric-shop-id').value);
+      const logs = [];
+
+      document.querySelectorAll('.biometric-log').forEach(log => {
+        logs.push({
+          employee_id: log.querySelector('.emp-id').value,
+          employee_name: log.querySelector('.emp-name').value,
+          check_in_time: log.querySelector('.check-in-time').value,
+          check_out_time: log.querySelector('.check-out-time').value,
+          status: log.querySelector('.emp-status').value
+        });
+      });
+
+      try {
+        const result = await api.ingestBiometricLogs(shopId, logs);
+        showSuccess(`Biometric data ingested successfully! (${result.success_count} records)`);
+        clearBiometricForm();
+      } catch (error) {
+        showError(error.message || 'Error ingesting biometric data');
+      }
+    }
+
+    // Delivery Schedules Handling
+    let deliveryItemCount = 1;
+    function addDeliveryItem() {
+      deliveryItemCount++;
+      const container = document.getElementById('delivery-items-container');
+      const newItem = document.createElement('div');
+      newItem.className = 'delivery-item';
+      newItem.style.cssText = 'border: 1px solid #ddd; padding: 1rem; margin: 1rem 0; border-radius: 4px;';
+      newItem.innerHTML = `
+        <h4>Delivery ${deliveryItemCount}</h4>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Delivery ID *</label>
+            <input type="text" class="del-id" placeholder="e.g., DEL001" required>
+          </div>
+          <div class="form-group">
+            <label>Item Code *</label>
+            <input type="text" class="del-item-code" placeholder="e.g., RICE001" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Item Name *</label>
+          <input type="text" class="del-item-name" placeholder="e.g., Rice 10kg" required>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Scheduled Quantity *</label>
+            <input type="number" class="del-scheduled-qty" placeholder="0" required min="0">
+          </div>
+          <div class="form-group">
+            <label>Delivered Quantity *</label>
+            <input type="number" class="del-delivered-qty" placeholder="0" required min="0">
+          </div>
+        </div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+          <div class="form-group">
+            <label>Scheduled Date *</label>
+            <input type="datetime-local" class="del-scheduled-date" required>
+          </div>
+          <div class="form-group">
+            <label>Actual Delivery Date *</label>
+            <input type="datetime-local" class="del-actual-date" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Status *</label>
+          <select class="del-status" required>
+            <option value="">Select Status</option>
+            <option value="scheduled">Scheduled</option>
+            <option value="in-transit">In Transit</option>
+            <option value="delivered">Delivered</option>
+            <option value="cancelled">Cancelled</option>
+          </select>
+        </div>
+        <button type="button" class="btn btn-danger" onclick="this.parentElement.remove()" style="margin-top: 0.5rem;">Remove</button>
+      `;
+      container.appendChild(newItem);
+    }
+
+    function clearDeliveryForm() {
+      document.getElementById('delivery-form').reset();
+      const container = document.getElementById('delivery-items-container');
+      container.querySelectorAll('.delivery-item').forEach((item, idx) => {
+        if (idx > 0) item.remove();
+      });
+      deliveryItemCount = 1;
+    }
+
+    async function handleDeliverySubmit(event) {
+      event.preventDefault();
+      const shopId = parseInt(document.getElementById('delivery-shop-id').value);
+      const deliveries = [];
+
+      document.querySelectorAll('.delivery-item').forEach(item => {
+        deliveries.push({
+          delivery_id: item.querySelector('.del-id').value,
+          item_code: item.querySelector('.del-item-code').value,
+          item_name: item.querySelector('.del-item-name').value,
+          scheduled_quantity: parseInt(item.querySelector('.del-scheduled-qty').value),
+          delivered_quantity: parseInt(item.querySelector('.del-delivered-qty').value),
+          scheduled_date: item.querySelector('.del-scheduled-date').value,
+          actual_delivery_date: item.querySelector('.del-actual-date').value,
+          status: item.querySelector('.del-status').value
+        });
+      });
+
+      try {
+        const result = await api.ingestDeliverySchedules(shopId, deliveries);
+        showSuccess(`Delivery data ingested successfully! (${result.success_count} records)`);
+        clearDeliveryForm();
+      } catch (error) {
+        showError(error.message || 'Error ingesting delivery data');
+      }
+    }
+  </script>
+</body>
+</html>

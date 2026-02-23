@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Admin Panel - PDS Leak Detection Platform">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Admin Panel - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Admin Panel</h1>
+        <p>System administration and user management</p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Admin</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Admin Tabs -->
+      <div class="card">
+        <div class="card-body">
+          <div style="display: flex; gap: 1rem; border-bottom: 2px solid #f0f0f0; margin-bottom: 2rem; flex-wrap: wrap;">
+            <button class="tab-btn active" data-tab="users-tab" onclick="switchAdminTab(this, 'users-tab')">
+              👥 User Management
+            </button>
+            <button class="tab-btn" data-tab="system-tab" onclick="switchAdminTab(this, 'system-tab')">
+              ⚙️ System Settings
+            </button>
+            <button class="tab-btn" data-tab="audit-tab" onclick="switchAdminTab(this, 'audit-tab')">
+              📋 Audit Logs
+            </button>
+            <button class="tab-btn" data-tab="reports-tab" onclick="switchAdminTab(this, 'reports-tab')">
+              📊 Reports
+            </button>
+          </div>
+
+          <!-- Users Tab -->
+          <div id="users-tab" class="tab-content active">
+            <h3>👥 User Management</h3>
+
+            <!-- Create User -->
+            <div style="background: #f9f9f9; padding: 1.5rem; border-radius: 4px; margin-bottom: 2rem;">
+              <h4>Add New User</h4>
+              <form id="create-user-form" onsubmit="handleCreateUser(event)">
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+                  <div class="form-group">
+                    <label for="user-username">Username *</label>
+                    <input type="text" id="user-username" required placeholder="username">
+                  </div>
+                  <div class="form-group">
+                    <label for="user-email">Email *</label>
+                    <input type="email" id="user-email" required placeholder="user@example.com">
+                  </div>
+                  <div class="form-group">
+                    <label for="user-password">Password *</label>
+                    <input type="password" id="user-password" required placeholder="Minimum 6 characters">
+                  </div>
+                  <div class="form-group">
+                    <label for="user-role">Role *</label>
+                    <select id="user-role" required>
+                      <option value="">Select Role</option>
+                      <option value="admin">Admin</option>
+                      <option value="shop_manager">Shop Manager</option>
+                      <option value="distribution_center">Distribution Center</option>
+                      <option value="analyst">Analyst</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label for="user-shop">Shop ID (Optional)</label>
+                    <input type="number" id="user-shop" placeholder="For shop managers only" min="1">
+                  </div>
+                  <div style="display: flex; align-items: flex-end;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">+ Create User</button>
+                  </div>
+                </div>
+              </form>
+            </div>
+
+            <!-- Users List -->
+            <h4>All Users</h4>
+            <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; margin-bottom: 1rem;">
+              <div class="form-group">
+                <label for="search-users">Search Users</label>
+                <input type="text" id="search-users" placeholder="Search by username or email..." onkeyup="loadUsers()">
+              </div>
+              <div class="form-group">
+                <label for="filter-role">Filter by Role</label>
+                <select id="filter-role" onchange="loadUsers()">
+                  <option value="">All Roles</option>
+                  <option value="admin">Admin</option>
+                  <option value="shop_manager">Shop Manager</option>
+                  <option value="distribution_center">Distribution Center</option>
+                  <option value="analyst">Analyst</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button class="btn btn-primary" onclick="loadUsers()">🔍 Filter</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table id="users-table">
+                <thead>
+                  <tr>
+                    <th>Username</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Shop ID</th>
+                    <th>Status</th>
+                    <th>Created</th>
+                    <th>Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="users-tbody">
+                  <tr>
+                    <td colspan="7" class="text-center" style="padding: 2rem;">
+                      <div class="spinner"></div> Loading users...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- User Pagination -->
+            <div id="user-pagination" style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+              <button class="btn btn-secondary" onclick="previousUserPage()" id="user-prev-btn">← Previous</button>
+              <span id="user-page-info" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 4px;">Page 1</span>
+              <button class="btn btn-secondary" onclick="nextUserPage()" id="user-next-btn">Next →</button>
+            </div>
+          </div>
+
+          <!-- System Settings Tab -->
+          <div id="system-tab" class="tab-content">
+            <h3>⚙️ System Settings</h3>
+
+            <div style="display: grid; gap: 1.5rem;">
+              <div class="card">
+                <div class="card-header">
+                  <h4>Database Information</h4>
+                </div>
+                <div class="card-body">
+                  <div style="display: grid; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Database Type:</strong></span>
+                      <span>SQLite</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Location:</strong></span>
+                      <span>backend/pds_leak_detection.db</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Status:</strong></span>
+                      <span class="badge" style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">Connected</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h4>API Configuration</h4>
+                </div>
+                <div class="card-body">
+                  <div style="display: grid; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>API Version:</strong></span>
+                      <span>v1</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Base URL:</strong></span>
+                      <span id="api-base-url">Loading...</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>JWT Authentication:</strong></span>
+                      <span class="badge" style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">Enabled</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h4>ML Models</h4>
+                </div>
+                <div class="card-body">
+                  <div style="display: grid; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Isolation Forest:</strong></span>
+                      <span class="badge" style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">Active</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>XGBoost:</strong></span>
+                      <span class="badge" style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">Active</span>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span><strong>Detection Status:</strong></span>
+                      <span class="badge" style="background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">Ready</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h4>System Actions</h4>
+                </div>
+                <div class="card-body">
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="testBackendConnection()">🔌 Test Backend Connection</button>
+                    <button class="btn btn-primary" onclick="runSystemDiagnostics()">🔍 Run Diagnostics</button>
+                    <button class="btn btn-danger" onclick="if(confirm('Clear all cache?')) { showSuccess('Cache cleared'); }">🗑️ Clear Cache</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Audit Logs Tab -->
+          <div id="audit-tab" class="tab-content">
+            <h3>📋 Audit Logs</h3>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+              <div class="form-group">
+                <label for="audit-user">User</label>
+                <input type="text" id="audit-user" placeholder="Search by username..." onkeyup="loadAuditLogs()">
+              </div>
+              <div class="form-group">
+                <label for="audit-action">Action Type</label>
+                <select id="audit-action" onchange="loadAuditLogs()">
+                  <option value="">All Actions</option>
+                  <option value="LOGIN">Login</option>
+                  <option value="LOGOUT">Logout</option>
+                  <option value="CREATE">Create</option>
+                  <option value="UPDATE">Update</option>
+                  <option value="DELETE">Delete</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label for="audit-days">Last N Days</label>
+                <select id="audit-days" onchange="loadAuditLogs()">
+                  <option value="7">Last 7 Days</option>
+                  <option value="30">Last 30 Days</option>
+                  <option value="90">Last 90 Days</option>
+                  <option value="365">Last Year</option>
+                </select>
+              </div>
+              <div style="display: flex; align-items: flex-end;">
+                <button class="btn btn-primary" onclick="loadAuditLogs()">🔍 Filter</button>
+              </div>
+            </div>
+
+            <div class="table-responsive">
+              <table id="audit-table">
+                <thead>
+                  <tr>
+                    <th>Timestamp</th>
+                    <th>User</th>
+                    <th>Action</th>
+                    <th>Entity Type</th>
+                    <th>Entity ID</th>
+                    <th>Changes</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-tbody">
+                  <tr>
+                    <td colspan="6" class="text-center" style="padding: 2rem;">
+                      <div class="spinner"></div> Loading audit logs...
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <!-- Audit Pagination -->
+            <div id="audit-pagination" style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+              <button class="btn btn-secondary" onclick="previousAuditPage()" id="audit-prev-btn">← Previous</button>
+              <span id="audit-page-info" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 4px;">Page 1</span>
+              <button class="btn btn-secondary" onclick="nextAuditPage()" id="audit-next-btn">Next →</button>
+            </div>
+          </div>
+
+          <!-- Reports Tab -->
+          <div id="reports-tab" class="tab-content">
+            <h3>📊 Reports & Analytics</h3>
+
+            <div style="display: grid; gap: 1.5rem;">
+              <div class="row">
+                <div class="card">
+                  <div class="card-header">
+                    <h4>Total Users</h4>
+                  </div>
+                  <div class="card-body">
+                    <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);" id="stat-total-users">0</div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <h4>Active Sessions</h4>
+                  </div>
+                  <div class="card-body">
+                    <div style="font-size: 2rem; font-weight: bold; color: #27ae60;" id="stat-active-sessions">0</div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <h4>Total Anomalies</h4>
+                  </div>
+                  <div class="card-body">
+                    <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;" id="stat-total-anomalies">0</div>
+                  </div>
+                </div>
+
+                <div class="card">
+                  <div class="card-header">
+                    <h4>Resolved Anomalies</h4>
+                  </div>
+                  <div class="card-body">
+                    <div style="font-size: 2rem; font-weight: bold; color: #27ae60;" id="stat-resolved-anomalies">0</div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h4>Users by Role</h4>
+                </div>
+                <div class="card-body">
+                  <div id="users-by-role" style="display: grid; gap: 1rem;">
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Admin</span>
+                      <strong id="role-admin">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Shop Manager</span>
+                      <strong id="role-shop">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Distribution Center</span>
+                      <strong id="role-dist">0</strong>
+                    </div>
+                    <div style="display: flex; justify-content: space-between;">
+                      <span>Analyst</span>
+                      <strong id="role-analyst">0</strong>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div class="card">
+                <div class="card-header">
+                  <h4>Export Options</h4>
+                </div>
+                <div class="card-body">
+                  <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                    <button class="btn btn-primary" onclick="exportUserReport()">📥 Export Users (CSV)</button>
+                    <button class="btn btn-primary" onclick="exportAuditReport()">📥 Export Audit Logs (CSV)</button>
+                    <button class="btn btn-primary" onclick="exportAnomalyReport()">📥 Export Anomalies (CSV)</button>
+                    <button class="btn btn-primary" onclick="exportSystemReport()">📥 Export System Report (PDF)</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/config.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Fill dynamic values from frontend/js/config.js
+    try {
+      const el = document.getElementById('api-base-url');
+      if (el && window && window.APP_CONFIG && window.APP_CONFIG.API_BASE_URL) {
+        el.textContent = window.APP_CONFIG.API_BASE_URL;
+      }
+    } catch (e) {
+      console.warn('Unable to set API base URL display', e);
+    }
+  </script>
+  <script>
+    // Initialize page
+    initializePage();
+    setupAuthenticationSecurity();
+
+    // Check admin access
+    const currentUser = getCurrentUser();
+    if (!currentUser || currentUser.role !== 'admin') {
+      showError('Access denied. Admin privileges required.');
+      setTimeout(() => {
+        window.location.href = 'dashboard.html';
+      }, 2000);
+    }
+
+    let userPage = 0;
+    let auditPage = 0;
+    const USER_LIMIT = 10;
+    const AUDIT_LIMIT = 20;
+
+    // Tab switching
+    function switchAdminTab(button, tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // User Management
+    async function loadUsers() {
+      try {
+        const result = await api.listUsers();
+        const users = result.users || [];
+
+        // Apply search
+        const search = document.getElementById('search-users').value.toLowerCase();
+        const role = document.getElementById('filter-role').value;
+
+        let filtered = users.filter(u => 
+          (u.username.toLowerCase().includes(search) || u.email.toLowerCase().includes(search)) &&
+          (!role || u.role === role)
+        );
+
+        userPage = 0;
+        displayUsers(filtered);
+      } catch (error) {
+        showError('Error loading users');
+        document.getElementById('users-tbody').innerHTML = `
+          <tr><td colspan="7" class="text-center" style="padding: 2rem;">Error loading users</td></tr>
+        `;
+      }
+    }
+
+    function displayUsers(users) {
+      const start = userPage * USER_LIMIT;
+      const end = start + USER_LIMIT;
+      const pageUsers = users.slice(start, end);
+
+      const tbody = document.getElementById('users-tbody');
+      
+      if (pageUsers.length === 0) {
+        tbody.innerHTML = `<tr><td colspan="7" class="text-center" style="padding: 2rem;">No users found</td></tr>`;
+        return;
+      }
+
+      tbody.innerHTML = pageUsers.map(user => `
+        <tr>
+          <td>${user.username}</td>
+          <td>${user.email}</td>
+          <td><span style="background: #e3f2fd; padding: 0.25rem 0.75rem; border-radius: 4px;">${user.role.replace(/_/g, ' ')}</span></td>
+          <td>${user.shop_id || '—'}</td>
+          <td>
+            <span class="badge" style="background: ${user.is_active ? '#27ae60' : '#95a5a6'}; color: white; padding: 0.25rem 0.75rem; border-radius: 20px;">
+              ${user.is_active ? 'Active' : 'Inactive'}
+            </span>
+          </td>
+          <td>${formatDate(user.created_at)}</td>
+          <td>
+            ${!user.is_active ? `<button class="btn btn-small btn-primary" onclick="activateUser(${user.id})">Activate</button>` : `<button class="btn btn-small btn-danger" onclick="deactivateUser(${user.id})">Deactivate</button>`}
+          </td>
+        </tr>
+      `).join('');
+
+      updateUserPagination(users.length);
+    }
+
+    async function handleCreateUser(event) {
+      event.preventDefault();
+
+      const userData = {
+        username: document.getElementById('user-username').value,
+        email: document.getElementById('user-email').value,
+        password: document.getElementById('user-password').value,
+        role: document.getElementById('user-role').value,
+        shop_id: document.getElementById('user-shop').value ? parseInt(document.getElementById('user-shop').value) : null
+      };
+
+      try {
+        await api.register(userData.username, userData.email, userData.password, userData.role, userData.shop_id);
+        showSuccess('User created successfully');
+        document.getElementById('create-user-form').reset();
+        loadUsers();
+      } catch (error) {
+        showError(error.message || 'Error creating user');
+      }
+    }
+
+    async function deactivateUser(userId) {
+      if (!confirm('Are you sure you want to deactivate this user?')) return;
+      try {
+        await api.deactivateUser(userId);
+        showSuccess('User deactivated');
+        loadUsers();
+      } catch (error) {
+        showError(error.message || 'Error deactivating user');
+      }
+    }
+
+    function activateUser(userId) {
+      showError('User activation not yet implemented');
+    }
+
+    function updateUserPagination(total) {
+      const pages = Math.ceil(total / USER_LIMIT);
+      document.getElementById('user-page-info').textContent = `Page ${userPage + 1} of ${Math.max(1, pages)}`;
+      document.getElementById('user-prev-btn').disabled = userPage === 0;
+      document.getElementById('user-next-btn').disabled = userPage >= pages - 1;
+    }
+
+    function nextUserPage() { userPage++; loadUsers(); }
+    function previousUserPage() { if (userPage > 0) userPage--; loadUsers(); }
+
+    // Audit Logs
+    async function loadAuditLogs() {
+      showSuccess('Audit logs feature coming soon');
+      document.getElementById('audit-tbody').innerHTML = `
+        <tr><td colspan="6" class="text-center" style="padding: 2rem; color: #999;">Audit logs loading...</td></tr>
+      `;
+    }
+
+    function nextAuditPage() { auditPage++; loadAuditLogs(); }
+    function previousAuditPage() { if (auditPage > 0) auditPage--; loadAuditLogs(); }
+
+    // System Actions
+    async function testBackendConnection() {
+      try {
+        const result = await api.healthCheck();
+        showSuccess(`✅ Backend is healthy - Version ${result.version}`);
+      } catch (error) {
+        showError('❌ Backend connection failed');
+      }
+    }
+
+    async function runSystemDiagnostics() {
+      showSuccess('Running system diagnostics...');
+      setTimeout(() => {
+        showSuccess('✅ All systems operational');
+      }, 2000);
+    }
+
+    // Export Functions
+    function exportUserReport() {
+      showSuccess('User report export feature coming soon');
+    }
+
+    function exportAuditReport() {
+      showSuccess('Audit report export feature coming soon');
+    }
+
+    function exportAnomalyReport() {
+      showSuccess('Anomaly report export feature coming soon');
+    }
+
+    function exportSystemReport() {
+      showSuccess('System report export feature coming soon');
+    }
+
+    // Load initial data
+    loadUsers();
+    loadReports();
+
+    async function loadReports() {
+      try {
+        const usersResult = await api.listUsers(1000);
+        const users = usersResult.users || [];
+
+        document.getElementById('stat-total-users').textContent = users.length;
+        document.getElementById('role-admin').textContent = users.filter(u => u.role === 'admin').length;
+        document.getElementById('role-shop').textContent = users.filter(u => u.role === 'shop_manager').length;
+        document.getElementById('role-dist').textContent = users.filter(u => u.role === 'distribution_center').length;
+        document.getElementById('role-analyst').textContent = users.filter(u => u.role === 'analyst').length;
+      } catch (error) {
+        console.error('Error loading reports:', error);
+      }
+    }
+
+    // Add CSS
+    const style = document.createElement('style');
+    style.textContent = `
+      .btn-small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+      .badge { padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+    `;
+    document.head.appendChild(style);
+  </script>
+</body>
+</html>

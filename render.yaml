@@ -1,0 +1,27 @@
+# Render service configuration (render.com)
+# Use this file to create services on Render via the dashboard or CLI.
+# Adjust names, regions and env vars before deploying.
+
+services:
+  - type: web
+    name: pds-backend
+    env: docker
+    dockerfilePath: backend/Dockerfile
+    repo: REPLACE_WITH_YOUR_REPO
+    branch: main
+    plan: free
+    autoDeploy: true
+
+  - type: static-site
+    name: pds-frontend
+    staticPublishPath: frontend
+    repo: REPLACE_WITH_YOUR_REPO
+    branch: main
+    plan: free
+    autoDeploy: true
+
+# Notes:
+# 1) Replace REPLACE_WITH_YOUR_REPO with the GitHub repo URL (e.g. github.com/you/repo).
+# 2) For private repos or environment variables, configure them in the Render dashboard.
+# 3) Render will build the backend using the Dockerfile at backend/Dockerfile.
+# 4) After pushing this repo to GitHub, connect it to Render and import this render.yaml.

@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PDS Leak Detection Platform - Official Government Dashboard">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Dashboard - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Welcome to the PDS Leak Detection Platform</p>
+        </div>
+        <button id="back-logout-btn" class="btn btn-danger" style="height: fit-content;">
+          ← Back & Logout
+        </button>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Dashboard</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Statistics Section -->
+      <div class="row">
+        <div class="card stat-card">
+          <div class="card-body">
+            <div class="stat-number" id="total-shops">0</div>
+            <div class="stat-label">Total Shops</div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="card-body">
+            <div class="stat-number" id="active-anomalies">0</div>
+            <div class="stat-label">Active Anomalies</div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="card-body">
+            <div class="stat-number" id="critical-alerts">0</div>
+            <div class="stat-label">Critical Alerts</div>
+          </div>
+        </div>
+
+        <div class="card stat-card">
+          <div class="card-body">
+            <div class="stat-number" id="data-records">0</div>
+            <div class="stat-label">Data Records</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Quick Actions -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Quick Actions</h3>
+        </div>
+        <div class="card-body">
+          <div class="row">
+            <div>
+              <a href="data-ingestion.html" class="btn btn-primary" style="width: 100%;">
+                📤 Ingest Data
+              </a>
+            </div>
+            <div>
+              <a href="anomalies.html" class="btn btn-primary" style="width: 100%;">
+                🔍 View Anomalies
+              </a>
+            </div>
+            <div>
+              <a href="shops.html" class="btn btn-primary" style="width: 100%;">
+                🏪 Manage Shops
+              </a>
+            </div>
+            <div>
+              <a href="admin.html" class="btn btn-primary" style="width: 100%;">
+                ⚙️ Admin Panel
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Anomalies -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Recent Anomalies</h3>
+          <a href="anomalies.html" style="text-decoration: none; color: var(--primary-color); font-weight: 500;">View All →</a>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="recent-anomalies-table">
+              <thead>
+                <tr>
+                  <th>Shop</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>Status</th>
+                  <th>Detected</th>
+                </tr>
+              </thead>
+              <tbody id="anomalies-tbody">
+                <tr>
+                  <td colspan="5" class="text-center" style="padding: 2rem;">
+                    <div class="spinner"></div> Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- System Status -->
+      <div class="row">
+        <div class="card">
+          <div class="card-header">
+            <h3>System Status</h3>
+          </div>
+          <div class="card-body">
+            <div style="padding: 1rem 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>API Server</span>
+                <span class="badge badge-success">Online</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Database</span>
+                <span class="badge badge-success">Connected</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Last Backup</span>
+                <span id="last-backup-time">--</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>System Load</span>
+                <span id="system-load">Normal</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>User Activity</h3>
+          </div>
+          <div class="card-body">
+            <div style="padding: 1rem 0;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Active Users</span>
+                <strong id="active-users">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Total Users</span>
+                <strong id="total-users">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+                <span>Last Login</span>
+                <span id="last-login">--</span>
+              </div>
+              <div style="display: flex; justify-content: space-between; align-items: center;">
+                <span>Failed Attempts</span>
+                <strong id="failed-attempts">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Information Cards -->
+      <div class="row">
+        <div class="card">
+          <div class="card-header">
+            <h3>🔒 Security Notice</h3>
+          </div>
+          <div class="card-body">
+            <p>This is an official Government portal. Always ensure you are accessing this website through a secure connection (HTTPS). Never share your credentials.</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>📢 Latest Updates</h3>
+          </div>
+          <div class="card-body">
+            <p><strong>v1.0.0</strong> - Initial Launch</p>
+            <p style="font-size: 0.9rem; color: #999;">All systems operational. Check back for important updates.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Initialize page
+    initializePage();
+
+    // Load dashboard data
+    async function loadDashboardData() {
+      try {
+        // Load shops count
+        const shopsResult = await api.listShops(1);
+        document.getElementById('total-shops').textContent = formatNumber(shopsResult.total || 0);
+
+        // Load recent anomalies
+        const currentUser = getCurrentUser();
+        if (currentUser && currentUser.shop_id) {
+          // If user is a shop manager, load their shop's anomalies
+          const anomaliesResult = await api.getAnomalies(currentUser.shop_id, null, null, 'open', 5);
+          displayAnomalies(anomaliesResult.anomalies || []);
+          
+          const stats = await api.getAnomalyStats(currentUser.shop_id);
+          document.getElementById('active-anomalies').textContent = stats.total_anomalies || 0;
+          document.getElementById('critical-alerts').textContent = stats.severity_distribution?.critical || 0;
+        } else if (currentUser && currentUser.role === 'admin') {
+          // Admins can see all anomalies
+          document.getElementById('active-anomalies').textContent = '...';
+          document.getElementById('critical-alerts').textContent = '...';
+        }
+
+        // Update timestamp
+        document.getElementById('last-backup-time').textContent = new Date().toLocaleString('en-IN');
+        document.getElementById('last-login').textContent = new Date().toLocaleString('en-IN');
+
+      } catch (error) {
+        console.error('Error loading dashboard data:', error);
+        showError('Error loading dashboard data. Please try again later.');
+      }
+    }
+
+    // Display anomalies in table
+    function displayAnomalies(anomalies) {
+      const tbody = document.getElementById('anomalies-tbody');
+      
+      if (anomalies.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="5" class="text-center" style="padding: 2rem; color: #999;">
+              No anomalies detected. Keep monitoring!
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = anomalies.map(anomaly => `
+        <tr>
+          <td>Shop #${anomaly.shop_id || 'N/A'}</td>
+          <td>${anomaly.anomaly_type?.replace(/_/g, ' ') || 'Unknown'}</td>
+          <td>${createSeverityBadge(anomaly.severity)}</td>
+          <td>${createStatusIndicator(anomaly.status, anomaly.status)}</td>
+          <td>${formatDate(anomaly.detected_at)}</td>
+        </tr>
+      `).join('');
+    }
+
+    // Refresh dashboard every 30 seconds
+    loadDashboardData();
+    setInterval(loadDashboardData, 30000);
+
+    // Handle back and logout button
+    document.getElementById('back-logout-btn').addEventListener('click', function() {
+      logout();
+    });
+
+    // Setup authentication security (prevent back button access)
+    setupAuthenticationSecurity();
+  </script>
+</body>
+</html>

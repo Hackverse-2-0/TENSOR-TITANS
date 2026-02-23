@@ -1,0 +1,504 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Manage Shops - PDS Leak Detection Platform">  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />  <title>Manage Shops - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Shop Management</h1>
+        <p>Create, update, and manage distribution shops</p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Shops</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Create Shop Section -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Create New Shop</h3>
+        </div>
+        <div class="card-body">
+          <form id="create-shop-form" onsubmit="handleCreateShop(event)">
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+              <div class="form-group">
+                <label for="shop-code">Shop Code *</label>
+                <input type="text" id="shop-code" required placeholder="e.g., SHOP001" maxlength="20">
+              </div>
+              <div class="form-group">
+                <label for="shop-name">Shop Name *</label>
+                <input type="text" id="shop-name" required placeholder="e.g., Central Distribution Shop">
+              </div>
+              <div class="form-group">
+                <label for="shop-location">Location *</label>
+                <input type="text" id="shop-location" required placeholder="e.g., Mumbai, MH">
+              </div>
+            </div>
+
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+              <div class="form-group">
+                <label for="shop-latitude">Latitude</label>
+                <input type="number" id="shop-latitude" placeholder="19.0760" step="0.0001">
+              </div>
+              <div class="form-group">
+                <label for="shop-longitude">Longitude</label>
+                <input type="number" id="shop-longitude" placeholder="72.8777" step="0.0001">
+              </div>
+              <div class="form-group">
+                <label for="shop-contact">Contact Number</label>
+                <input type="tel" id="shop-contact" placeholder="Phone number">
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 1rem;">
+              <button type="submit" class="btn btn-primary">+ Create Shop</button>
+              <button type="reset" class="btn btn-secondary">Clear</button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <!-- Search and Filter -->
+      <div class="card">
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: 1fr 1fr auto; gap: 1rem; align-items: end;">
+            <div class="form-group">
+              <label for="search-shop">Search Shops</label>
+              <input type="text" id="search-shop" placeholder="Search by code or name..." onkeyup="loadShops()"">
+            </div>
+            <div class="form-group">
+              <label for="sort-by">Sort By</label>
+              <select id="sort-by" onchange="loadShops()">
+                <option value="newest">Newest First</option>
+                <option value="name">Name (A-Z)</option>
+                <option value="code">Code (A-Z)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="loadShops()">🔍 Search</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shops Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Shops Directory</h3>
+          <span id="shop-count" style="font-weight: normal; color: #666;">Loading...</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="shops-table">
+              <thead>
+                <tr>
+                  <th>Shop Code</th>
+                  <th>Shop Name</th>
+                  <th>Location</th>
+                  <th>Stock Records</th>
+                  <th>Active Anomalies</th>
+                  <th>Created</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="shops-tbody">
+                <tr>
+                  <td colspan="7" class="text-center" style="padding: 2rem;">
+                    <div class="spinner"></div> Loading shops...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination" style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+            <button class="btn btn-secondary" onclick="previousShopPage()" id="shop-prev-btn">← Previous</button>
+            <span id="shop-page-info" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 4px;">Page 1</span>
+            <button class="btn btn-secondary" onclick="nextShopPage()" id="shop-next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="row">
+        <div class="card">
+          <div class="card-header">
+            <h3>Total Shops</h3>
+          </div>
+          <div class="card-body">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--primary-color);" id="total-shops-stat">0</div>
+            <p style="color: #666; margin-top: 0.5rem;">Active distribution points</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Shops with Anomalies</h3>
+          </div>
+          <div class="card-body">
+            <div style="font-size: 2rem; font-weight: bold; color: #e74c3c;" id="shops-with-anomalies">0</div>
+            <p style="color: #666; margin-top: 0.5rem;">Requiring attention</p>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Average Anomalies/Shop</h3>
+          </div>
+          <div class="card-body">
+            <div style="font-size: 2rem; font-weight: bold; color: var(--secondary-color);" id="avg-anomalies">0</div>
+            <p style="color: #666; margin-top: 0.5rem;">Per shop</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Edit Shop Modal -->
+  <div id="edit-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Edit Shop</h2>
+        <span onclick="hideModal('edit-modal')" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+      </div>
+      <div class="modal-body">
+        <form id="edit-shop-form" onsubmit="handleUpdateShop(event)">
+          <input type="hidden" id="edit-shop-id">
+          <div class="form-group">
+            <label for="edit-shop-code">Shop Code *</label>
+            <input type="text" id="edit-shop-code" required readonly>
+          </div>
+          <div class="form-group">
+            <label for="edit-shop-name">Shop Name *</label>
+            <input type="text" id="edit-shop-name" required>
+          </div>
+          <div class="form-group">
+            <label for="edit-shop-location">Location *</label>
+            <input type="text" id="edit-shop-location" required>
+          </div>
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+            <div class="form-group">
+              <label for="edit-shop-latitude">Latitude</label>
+              <input type="number" id="edit-shop-latitude" step="0.0001">
+            </div>
+            <div class="form-group">
+              <label for="edit-shop-longitude">Longitude</label>
+              <input type="number" id="edit-shop-longitude" step="0.0001">
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="hideModal('edit-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="document.getElementById('edit-shop-form').dispatchEvent(new Event('submit'))">Update Shop</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Shop Details Modal -->
+  <div id="details-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Shop Details</h2>
+        <span onclick="hideModal('details-modal')" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+      </div>
+      <div class="modal-body" id="details-body">
+        <!-- Content loaded dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="hideModal('details-modal')">Close</button>
+        <button class="btn btn-primary" id="edit-btn" onclick="switchToEdit()">Edit Shop</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Initialize page
+    initializePage();
+    setupAuthenticationSecurity();
+
+    let currentShopPage = 0;
+    let totalShops = 0;
+    let allShops = [];
+    const SHOPS_LIMIT = 10;
+
+    // Load shops on page load
+    async function loadShops() {
+      try {
+        const result = await api.listShops(1000);
+        allShops = result.shops || [];
+        
+        // Apply search filter
+        const searchTerm = document.getElementById('search-shop').value.toLowerCase();
+        let filtered = allShops.filter(shop => 
+          shop.shop_code.toLowerCase().includes(searchTerm) ||
+          shop.shop_name.toLowerCase().includes(searchTerm)
+        );
+
+        // Apply sorting
+        const sortBy = document.getElementById('sort-by').value;
+        if (sortBy === 'name') {
+          filtered.sort((a, b) => a.shop_name.localeCompare(b.shop_name));
+        } else if (sortBy === 'code') {
+          filtered.sort((a, b) => a.shop_code.localeCompare(b.shop_code));
+        }
+
+        totalShops = filtered.length;
+        currentShopPage = 0;
+        displayShops(filtered);
+        updateShopStats();
+      } catch (error) {
+        showError('Error loading shops');
+        document.getElementById('shops-tbody').innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center" style="padding: 2rem; color: #999;">
+              Error loading shops
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function displayShops(shops) {
+      const start = currentShopPage * SHOPS_LIMIT;
+      const end = start + SHOPS_LIMIT;
+      const pageShops = shops.slice(start, end);
+
+      const tbody = document.getElementById('shops-tbody');
+      
+      if (pageShops.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="7" class="text-center" style="padding: 2rem; color: #999;">
+              No shops found
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = pageShops.map(shop => `
+        <tr>
+          <td><strong>${shop.shop_code}</strong></td>
+          <td>${shop.shop_name}</td>
+          <td>${shop.location}</td>
+          <td>
+            <span style="background: #e8f5e9; padding: 0.25rem 0.75rem; border-radius: 20px;">
+              ${shop.stock_records || 0}
+            </span>
+          </td>
+          <td>
+            <span style="background: #ffebee; padding: 0.25rem 0.75rem; border-radius: 20px;">
+              ${shop.active_anomalies || 0}
+            </span>
+          </td>
+          <td>${formatDate(shop.created_at)}</td>
+          <td>
+            <div style="display: flex; gap: 0.5rem;">
+              <button class="btn btn-small btn-primary" onclick="viewShopDetails(${shop.id})">View</button>
+              <button class="btn btn-small btn-secondary" onclick="editShop(${shop.id})">Edit</button>
+              <button class="btn btn-small btn-danger" onclick="deleteShop(${shop.id}, '${shop.shop_name}')">Delete</button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+
+      updateShopPagination(shops.length);
+      document.getElementById('shop-count').textContent = `(Total: ${shops.length})`;
+    }
+
+    async function viewShopDetails(shopId) {
+      try {
+        const shop = allShops.find(s => s.id === shopId);
+        if (!shop) {
+          showError('Shop not found');
+          return;
+        }
+
+        const detailsBody = document.getElementById('details-body');
+        detailsBody.innerHTML = `
+          <div style="margin-bottom: 1.5rem;">
+            <div style="margin-bottom: 1rem;">
+              <strong>Shop Code:</strong> ${shop.shop_code}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Shop Name:</strong> ${shop.shop_name}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Location:</strong> ${shop.location}
+            </div>
+            ${shop.latitude ? `
+            <div style="margin-bottom: 1rem;">
+              <strong>Coordinates:</strong> ${shop.latitude.toFixed(4)}, ${shop.longitude.toFixed(4)}
+            </div>
+            ` : ''}
+            <div style="margin-bottom: 1rem;">
+              <strong>Created:</strong> ${formatDate(shop.created_at)}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Stock Records:</strong> ${shop.stock_records || 0}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Active Anomalies:</strong> ${shop.active_anomalies || 0}
+            </div>
+          </div>
+        `;
+
+        document.getElementById('edit-btn').onclick = () => editShop(shopId);
+        showModal('details-modal');
+      } catch (error) {
+        showError('Error loading shop details');
+      }
+    }
+
+    async function editShop(shopId) {
+      try {
+        hideModal('details-modal');
+        const shop = allShops.find(s => s.id === shopId);
+        if (!shop) {
+          showError('Shop not found');
+          return;
+        }
+
+        document.getElementById('edit-shop-id').value = shop.id;
+        document.getElementById('edit-shop-code').value = shop.shop_code;
+        document.getElementById('edit-shop-name').value = shop.shop_name;
+        document.getElementById('edit-shop-location').value = shop.location;
+        document.getElementById('edit-shop-latitude').value = shop.latitude || '';
+        document.getElementById('edit-shop-longitude').value = shop.longitude || '';
+
+        showModal('edit-modal');
+      } catch (error) {
+        showError('Error opening edit form');
+      }
+    }
+
+    function switchToEdit() {
+      hideModal('details-modal');
+      const shopId = allShops[0].id;
+      editShop(shopId);
+    }
+
+    async function handleCreateShop(event) {
+      event.preventDefault();
+
+      const shop = {
+        shop_code: document.getElementById('shop-code').value,
+        shop_name: document.getElementById('shop-name').value,
+        location: document.getElementById('shop-location').value,
+        latitude: document.getElementById('shop-latitude').value ? 
+                  parseFloat(document.getElementById('shop-latitude').value) : null,
+        longitude: document.getElementById('shop-longitude').value ? 
+                   parseFloat(document.getElementById('shop-longitude').value) : null
+      };
+
+      try {
+        await api.createShop(shop);
+        showSuccess('Shop created successfully');
+        document.getElementById('create-shop-form').reset();
+        loadShops();
+      } catch (error) {
+        showError(error.message || 'Error creating shop');
+      }
+    }
+
+    async function handleUpdateShop(event) {
+      event.preventDefault();
+
+      const shopId = parseInt(document.getElementById('edit-shop-id').value);
+      const shop = {
+        shop_name: document.getElementById('edit-shop-name').value,
+        location: document.getElementById('edit-shop-location').value,
+        latitude: document.getElementById('edit-shop-latitude').value ? 
+                  parseFloat(document.getElementById('edit-shop-latitude').value) : null,
+        longitude: document.getElementById('edit-shop-longitude').value ? 
+                   parseFloat(document.getElementById('edit-shop-longitude').value) : null
+      };
+
+      try {
+        await api.updateShop(shopId, shop);
+        showSuccess('Shop updated successfully');
+        hideModal('edit-modal');
+        loadShops();
+      } catch (error) {
+        showError(error.message || 'Error updating shop');
+      }
+    }
+
+    async function deleteShop(shopId, shopName) {
+      if (!confirm(`Are you sure you want to delete "${shopName}"? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        await api.deleteShop(shopId);
+        showSuccess('Shop deleted successfully');
+        loadShops();
+      } catch (error) {
+        showError(error.message || 'Error deleting shop');
+      }
+    }
+
+    function updateShopPagination(totalCount) {
+      const totalPages = Math.ceil(totalCount / SHOPS_LIMIT);
+      document.getElementById('shop-page-info').textContent = 
+        `Page ${currentShopPage + 1} of ${Math.max(1, totalPages)} (${totalCount} total)`;
+      document.getElementById('shop-prev-btn').disabled = currentShopPage === 0;
+      document.getElementById('shop-next-btn').disabled = currentShopPage >= totalPages - 1;
+    }
+
+    function nextShopPage() {
+      const totalCount = totalShops;
+      if (currentShopPage < Math.ceil(totalCount / SHOPS_LIMIT) - 1) {
+        currentShopPage++;
+        displayShops(allShops);
+      }
+    }
+
+    function previousShopPage() {
+      if (currentShopPage > 0) {
+        currentShopPage--;
+        displayShops(allShops);
+      }
+    }
+
+    async function updateShopStats() {
+      document.getElementById('total-shops-stat').textContent = totalShops;
+      
+      // Calculate shops with anomalies
+      const shopsWithAnomalies = allShops.filter(s => (s.active_anomalies || 0) > 0).length;
+      document.getElementById('shops-with-anomalies').textContent = shopsWithAnomalies;
+
+      // Calculate average anomalies
+      const totalAnomalies = allShops.reduce((sum, s) => sum + (s.active_anomalies || 0), 0);
+      const avgAnomalies = totalShops > 0 ? (totalAnomalies / totalShops).toFixed(2) : 0;
+      document.getElementById('avg-anomalies').textContent = avgAnomalies;
+    }
+
+    // Add CSS for small buttons
+    const style = document.createElement('style');
+    style.textContent = `
+      .btn-small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+    `;
+    document.head.appendChild(style);
+
+    // Initial load
+    loadShops();
+  </script>
+</body>
+</html>

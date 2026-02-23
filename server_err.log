@@ -1,0 +1,55 @@
+2026-02-18 01:08:17,007 - main - INFO - Database tables created/verified
+2026-02-18 01:08:17,043 - werkzeug - INFO - [31m[1mWARNING: This is a development server. Do not use it in a production deployment. Use a production WSGI server instead.[0m
+ * Running on all addresses (0.0.0.0)
+ * Running on http://127.0.0.1:5000
+ * Running on http://10.180.48.58:5000
+2026-02-18 01:08:17,044 - werkzeug - INFO - [33mPress CTRL+C to quit[0m
+2026-02-18 01:08:17,046 - werkzeug - INFO -  * Restarting with stat
+2026-02-18 01:08:20,205 - main - INFO - Database tables created/verified
+2026-02-18 01:08:20,223 - werkzeug - WARNING -  * Debugger is active!
+2026-02-18 01:08:20,228 - werkzeug - INFO -  * Debugger PIN: 114-364-562
+2026-02-18 01:09:25,650 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:25] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:09:28,524 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:28] "[35m[1mPOST /api/v1/auth/register HTTP/1.1[0m" 201 -
+2026-02-18 01:09:31,182 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:31] "POST /api/v1/auth/login HTTP/1.1" 200 -
+2026-02-18 01:09:33,230 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:33] "GET /api/v1/auth/me HTTP/1.1" 200 -
+2026-02-18 01:09:35,271 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:35] "[31m[1mPOST /api/v1/shops HTTP/1.1[0m" 400 -
+2026-02-18 01:09:37,333 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:37] "GET /api/v1/shops HTTP/1.1" 200 -
+2026-02-18 01:09:39,405 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:39] "GET /api/v1/invalid-endpoint HTTP/1.1" 200 -
+2026-02-18 01:09:41,457 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:41] "[31m[1mGET /api/v1/auth/me HTTP/1.1[0m" 401 -
+2026-02-18 01:09:42,299 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:42] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:09:43,503 - api.auth_routes - ERROR - Error during login: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
+2026-02-18 01:09:43,511 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:43] "[35m[1mPOST /api/v1/auth/login HTTP/1.1[0m" 500 -
+2026-02-18 01:09:44,865 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:44] "[35m[1mPOST /api/v1/auth/register HTTP/1.1[0m" 201 -
+2026-02-18 01:09:45,549 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:45] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:09:47,578 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:47] "POST /api/v1/auth/login HTTP/1.1" 200 -
+2026-02-18 01:09:49,617 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:49] "GET /api/v1/auth/me HTTP/1.1" 200 -
+2026-02-18 01:09:51,666 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:51] "[31m[1mPOST /api/v1/shops HTTP/1.1[0m" 400 -
+2026-02-18 01:09:53,712 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:53] "GET /api/v1/shops HTTP/1.1" 200 -
+2026-02-18 01:09:55,764 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:55] "GET /api/v1/invalid-endpoint HTTP/1.1" 200 -
+2026-02-18 01:09:57,811 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:57] "[31m[1mGET /api/v1/auth/me HTTP/1.1[0m" 401 -
+2026-02-18 01:09:59,852 - api.auth_routes - ERROR - Error during login: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
+2026-02-18 01:09:59,854 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:09:59] "[35m[1mPOST /api/v1/auth/login HTTP/1.1[0m" 500 -
+2026-02-18 01:10:01,913 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:01] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:10:18,584 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:18] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:10:21,252 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:21] "[35m[1mPOST /api/v1/auth/register HTTP/1.1[0m" 201 -
+2026-02-18 01:10:23,824 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:23] "POST /api/v1/auth/login HTTP/1.1" 200 -
+2026-02-18 01:10:25,888 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:25] "GET /api/v1/auth/me HTTP/1.1" 200 -
+2026-02-18 01:10:27,923 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:27] "[31m[1mPOST /api/v1/shops HTTP/1.1[0m" 400 -
+2026-02-18 01:10:29,982 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:29] "GET /api/v1/shops HTTP/1.1" 200 -
+2026-02-18 01:10:32,024 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:32] "GET /api/v1/invalid-endpoint HTTP/1.1" 200 -
+2026-02-18 01:10:34,087 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:34] "[31m[1mGET /api/v1/auth/me HTTP/1.1[0m" 401 -
+2026-02-18 01:10:36,142 - api.auth_routes - ERROR - Error during login: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
+2026-02-18 01:10:36,150 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:36] "[35m[1mPOST /api/v1/auth/login HTTP/1.1[0m" 500 -
+2026-02-18 01:10:38,204 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:10:38] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:12:10,027 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:10] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:12:26,053 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:26] "GET /api/v1/health HTTP/1.1" 200 -
+2026-02-18 01:12:28,692 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:28] "[35m[1mPOST /api/v1/auth/register HTTP/1.1[0m" 201 -
+2026-02-18 01:12:31,530 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:31] "POST /api/v1/auth/login HTTP/1.1" 200 -
+2026-02-18 01:12:33,572 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:33] "GET /api/v1/auth/me HTTP/1.1" 200 -
+2026-02-18 01:12:35,655 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:35] "[31m[1mPOST /api/v1/shops HTTP/1.1[0m" 400 -
+2026-02-18 01:12:37,709 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:37] "GET /api/v1/shops HTTP/1.1" 200 -
+2026-02-18 01:12:39,766 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:39] "GET /api/v1/invalid-endpoint HTTP/1.1" 200 -
+2026-02-18 01:12:41,791 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:41] "[31m[1mGET /api/v1/auth/me HTTP/1.1[0m" 401 -
+2026-02-18 01:12:43,827 - api.auth_routes - ERROR - Error during login: 400 Bad Request: Failed to decode JSON object: Expecting value: line 1 column 1 (char 0)
+2026-02-18 01:12:43,831 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:43] "[35m[1mPOST /api/v1/auth/login HTTP/1.1[0m" 500 -
+2026-02-18 01:12:45,877 - werkzeug - INFO - 127.0.0.1 - - [18/Feb/2026 01:12:45] "GET /api/v1/health HTTP/1.1" 200 -

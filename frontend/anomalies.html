@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="View Anomalies - PDS Leak Detection Platform">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>View Anomalies - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Anomaly Detection</h1>
+        <p>Monitor and manage detected anomalies</p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Anomalies</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Filters -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Filters & Actions</h3>
+        </div>
+        <div class="card-body">
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem; margin-bottom: 1rem;">
+            <div class="form-group">
+              <label for="filter-shop">Shop ID</label>
+              <input type="number" id="filter-shop" placeholder="All shops" min="1">
+            </div>
+            <div class="form-group">
+              <label for="filter-severity">Severity</label>
+              <select id="filter-severity">
+                <option value="">All Severities</option>
+                <option value="low">Low</option>
+                <option value="medium">Medium</option>
+                <option value="high">High</option>
+                <option value="critical">Critical</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filter-type">Anomaly Type</label>
+              <select id="filter-type">
+                <option value="">All Types</option>
+                <option value="stock_discrepancy">Stock Discrepancy</option>
+                <option value="suspicious_activity">Suspicious Activity</option>
+                <option value="delivery_delay">Delivery Delay</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="filter-status">Status</label>
+              <select id="filter-status">
+                <option value="">All Status</option>
+                <option value="open">Open</option>
+                <option value="investigating">Investigating</option>
+                <option value="resolved">Resolved</option>
+              </select>
+            </div>
+          </div>
+
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <button class="btn btn-primary" onclick="loadAnomalies()">🔍 Apply Filters</button>
+            <button class="btn btn-secondary" onclick="clearFilters()">↻ Clear Filters</button>
+            <button class="btn btn-primary" onclick="runDetection()" style="flex: 1; max-width: 300px;">⚡ Run Detection</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Anomalies Table -->
+      <div class="card">
+        <div class="card-header">
+          <h3>Detected Anomalies</h3>
+          <span id="anomaly-count" style="font-weight: normal; color: #666;">Loading...</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table id="anomalies-table">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>Shop</th>
+                  <th>Type</th>
+                  <th>Severity</th>
+                  <th>Score</th>
+                  <th>Status</th>
+                  <th>Detected</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="anomalies-tbody">
+                <tr>
+                  <td colspan="8" class="text-center" style="padding: 2rem;">
+                    <div class="spinner"></div> Loading...
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Pagination -->
+          <div id="pagination" style="margin-top: 1rem; display: flex; gap: 0.5rem; justify-content: center; align-items: center;">
+            <button class="btn btn-secondary" onclick="previousPage()" id="prev-btn">← Previous</button>
+            <span id="page-info" style="padding: 0.5rem 1rem; background: #f0f0f0; border-radius: 4px;">Page 1</span>
+            <button class="btn btn-secondary" onclick="nextPage()" id="next-btn">Next →</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Statistics -->
+      <div class="row">
+        <div class="card">
+          <div class="card-header">
+            <h3>Severity Distribution</h3>
+          </div>
+          <div class="card-body">
+            <div id="severity-stats" style="padding: 1rem 0;">
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>🟢 Low</span>
+                <strong id="severity-low">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>🟡 Medium</span>
+                <strong id="severity-medium">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>🔴 High</span>
+                <strong id="severity-high">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>🔴 Critical</span>
+                <strong id="severity-critical">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <h3>Anomaly Types</h3>
+          </div>
+          <div class="card-body">
+            <div id="type-stats" style="padding: 1rem 0;">
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>Stock Discrepancy</span>
+                <strong id="type-stock">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>Suspicious Activity</span>
+                <strong id="type-activity">0</strong>
+              </div>
+              <div style="display: flex; justify-content: space-between; margin: 0.5rem 0;">
+                <span>Delivery Delay</span>
+                <strong id="type-delivery">0</strong>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <!-- Anomaly Details Modal -->
+  <div id="anomaly-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Anomaly Details</h2>
+        <span onclick="hideModal('anomaly-modal')" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+      </div>
+      <div class="modal-body" id="modal-body">
+        <!-- Content loaded dynamically -->
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="hideModal('anomaly-modal')">Close</button>
+        <button class="btn btn-primary" id="resolve-btn" onclick="openResolveForm()">Mark as Resolved</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Resolve Modal -->
+  <div id="resolve-modal" class="modal">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2>Resolve Anomaly</h2>
+        <span onclick="hideModal('resolve-modal')" style="cursor: pointer; font-size: 1.5rem;">&times;</span>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="resolve-status">Resolution Status *</label>
+          <select id="resolve-status" required>
+            <option value="">Select Status</option>
+            <option value="resolved">Resolved</option>
+            <option value="investigating">Investigating</option>
+            <option value="acknowledged">Acknowledged</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="resolve-notes">Resolution Notes</label>
+          <textarea id="resolve-notes" rows="4" placeholder="Enter resolution details..."></textarea>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button class="btn btn-secondary" onclick="hideModal('resolve-modal')">Cancel</button>
+        <button class="btn btn-primary" onclick="submitResolve()">Submit Resolution</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Initialize page
+    initializePage();
+    setupAuthenticationSecurity();
+
+    let currentPage = 0;
+    let totalAnomalies = 0;
+    let currentShopId = null;
+    let currentAnomalyId = null;
+    const LIMIT = 10;
+
+    // Load anomalies on page load
+    async function loadAnomalies() {
+      const currentUser = getCurrentUser();
+      if (!currentUser) return;
+
+      const shopId = document.getElementById('filter-shop').value || 
+                     (currentUser.shop_id && currentUser.role === 'shop_manager' ? currentUser.shop_id : 1);
+      
+      currentShopId = shopId;
+      currentPage = 0;
+      await fetchAnomalies(shopId);
+    }
+
+    async function fetchAnomalies(shopId, page = 0) {
+      try {
+        const severity = document.getElementById('filter-severity').value || null;
+        const type = document.getElementById('filter-type').value || null;
+        const status = document.getElementById('filter-status').value || null;
+
+        currentShopId = shopId;
+        currentPage = page;
+
+        const result = await api.getAnomalies(
+          shopId,
+          severity,
+          type,
+          status,
+          LIMIT,
+          page * LIMIT
+        );
+
+        totalAnomalies = result.total;
+        displayAnomalies(result.anomalies || []);
+        updatePagination();
+        updateStats();
+      } catch (error) {
+        showError(error.message || 'Error loading anomalies');
+        document.getElementById('anomalies-tbody').innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">
+              Error loading anomalies. Please try again.
+            </td>
+          </tr>
+        `;
+      }
+    }
+
+    function displayAnomalies(anomalies) {
+      const tbody = document.getElementById('anomalies-tbody');
+      
+      if (anomalies.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="8" class="text-center" style="padding: 2rem; color: #999;">
+              No anomalies found
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tbody.innerHTML = anomalies.map(anomaly => {
+        const severity = anomaly.severity || 'unknown';
+        const severityClass = {
+          'critical': 'badge-critical',
+          'high': 'badge-high',
+          'medium': 'badge-medium',
+          'low': 'badge-low'
+        }[severity] || 'badge-default';
+
+        return `
+          <tr>
+            <td>#${anomaly.id}</td>
+            <td>Shop #${anomaly.shop_id}</td>
+            <td>${anomaly.anomaly_type?.replace(/_/g, ' ') || 'Unknown'}</td>
+            <td>
+              <span class="badge ${severityClass}">
+                ${severity.charAt(0).toUpperCase() + severity.slice(1)}
+              </span>
+            </td>
+            <td>${(anomaly.anomaly_score * 100).toFixed(1)}%</td>
+            <td>${createStatusIndicator(anomaly.status, anomaly.status)}</td>
+            <td>${formatDate(anomaly.detected_at)}</td>
+            <td>
+              <button class="btn btn-small btn-primary" onclick="viewAnomalyDetails(${anomaly.id}, ${anomaly.shop_id})">
+                View
+              </button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+
+      document.getElementById('anomaly-count').textContent = `(Total: ${totalAnomalies})`;
+    }
+
+    async function viewAnomalyDetails(anomalyId, shopId) {
+      try {
+        currentAnomalyId = anomalyId;
+        const result = await api.getAnomalies(shopId, null, null, null, 1000);
+        const anomaly = result.anomalies.find(a => a.id === anomalyId);
+
+        if (!anomaly) {
+          showError('Anomaly not found');
+          return;
+        }
+
+        const modalBody = document.getElementById('modal-body');
+        const severity = anomaly.severity || 'unknown';
+        const severityClass = {
+          'critical': 'badge-critical',
+          'high': 'badge-high',
+          'medium': 'badge-medium',
+          'low': 'badge-low'
+        }[severity] || 'badge-default';
+
+        modalBody.innerHTML = `
+          <div style="margin-bottom: 1.5rem;">
+            <div style="margin-bottom: 1rem;">
+              <strong>Anomaly ID:</strong> #${anomaly.id}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Shop ID:</strong> ${anomaly.shop_id}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Type:</strong> ${anomaly.anomaly_type?.replace(/_/g, ' ') || 'Unknown'}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Severity:</strong>
+              <span class="badge ${severityClass}">
+                ${severity.charAt(0).toUpperCase() + severity.slice(1)}
+              </span>
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Score:</strong> ${(anomaly.anomaly_score * 100).toFixed(2)}%
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Status:</strong>
+              ${createStatusIndicator(anomaly.status, anomaly.status)}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Detected:</strong> ${formatDate(anomaly.detected_at)}
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Description:</strong>
+              <p style="margin: 0.5rem 0; white-space: pre-wrap;">${anomaly.description || 'No description'}</p>
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <strong>Evidence:</strong>
+              <pre style="background: #f5f5f5; padding: 1rem; border-radius: 4px; overflow-x: auto;">
+${JSON.stringify(anomaly.evidence || {}, null, 2)}
+              </pre>
+            </div>
+          </div>
+        `;
+
+        showModal('anomaly-modal');
+      } catch (error) {
+        showError('Error loading anomaly details');
+      }
+    }
+
+    function openResolveForm() {
+      hideModal('anomaly-modal');
+      document.getElementById('resolve-status').value = '';
+      document.getElementById('resolve-notes').value = '';
+      showModal('resolve-modal');
+    }
+
+    async function submitResolve() {
+      const status = document.getElementById('resolve-status').value;
+      const notes = document.getElementById('resolve-notes').value;
+
+      if (!status) {
+        showError('Please select a resolution status');
+        return;
+      }
+
+      try {
+        await api.resolveAnomaly(currentAnomalyId, status, notes);
+        showSuccess('Anomaly resolved successfully');
+        hideModal('resolve-modal');
+        loadAnomalies();
+      } catch (error) {
+        showError(error.message || 'Error resolving anomaly');
+      }
+    }
+
+    async function runDetection() {
+      const currentUser = getCurrentUser();
+      const shopId = document.getElementById('filter-shop').value || 
+                     (currentUser.shop_id && currentUser.role === 'shop_manager' ? currentUser.shop_id : 1);
+
+      try {
+        showSuccess('Running anomaly detection...');
+        await api.detectAnomalies(shopId);
+        showSuccess('Detection completed');
+        await fetchAnomalies(shopId, 0);
+      } catch (error) {
+        showError(error.message || 'Error running detection');
+      }
+    }
+
+    function clearFilters() {
+      document.getElementById('filter-shop').value = '';
+      document.getElementById('filter-severity').value = '';
+      document.getElementById('filter-type').value = '';
+      document.getElementById('filter-status').value = '';
+      loadAnomalies();
+    }
+
+    function updatePagination() {
+      const totalPages = Math.ceil(totalAnomalies / LIMIT);
+      document.getElementById('page-info').textContent = 
+        `Page ${currentPage + 1} of ${Math.max(1, totalPages)} (${totalAnomalies} total)`;
+      document.getElementById('prev-btn').disabled = currentPage === 0;
+      document.getElementById('next-btn').disabled = currentPage >= totalPages - 1;
+    }
+
+    function nextPage() {
+      if (currentPage < Math.ceil(totalAnomalies / LIMIT) - 1) {
+        fetchAnomalies(currentShopId, currentPage + 1);
+      }
+    }
+
+    function previousPage() {
+      if (currentPage > 0) {
+        fetchAnomalies(currentShopId, currentPage - 1);
+      }
+    }
+
+    async function updateStats() {
+      // This would typically fetch stats from the backend
+      // For now, we'll calculate from displayed anomalies
+      const tbody = document.getElementById('anomalies-tbody');
+      const rows = tbody.querySelectorAll('tr');
+
+      let stats = {
+        critical: 0,
+        high: 0,
+        medium: 0,
+        low: 0,
+        stock: 0,
+        activity: 0,
+        delivery: 0
+      };
+
+      rows.forEach(row => {
+        const cells = row.querySelectorAll('td');
+        if (cells.length >= 5) {
+          const badgeText = cells[3].innerText.toLowerCase();
+          if (badgeText.includes('critical')) stats.critical++;
+          if (badgeText.includes('high')) stats.high++;
+          if (badgeText.includes('medium')) stats.medium++;
+          if (badgeText.includes('low')) stats.low++;
+
+          const typeText = cells[2].innerText.toLowerCase();
+          if (typeText.includes('stock')) stats.stock++;
+          if (typeText.includes('suspicious') || typeText.includes('activity')) stats.activity++;
+          if (typeText.includes('delivery')) stats.delivery++;
+        }
+      });
+
+      document.getElementById('severity-critical').textContent = stats.critical;
+      document.getElementById('severity-high').textContent = stats.high;
+      document.getElementById('severity-medium').textContent = stats.medium;
+      document.getElementById('severity-low').textContent = stats.low;
+      document.getElementById('type-stock').textContent = stats.stock;
+      document.getElementById('type-activity').textContent = stats.activity;
+      document.getElementById('type-delivery').textContent = stats.delivery;
+    }
+
+    // Add CSS for badges
+    const style = document.createElement('style');
+    style.textContent = `
+      .badge-critical { background: #c0392b; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+      .badge-high { background: #e74c3c; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+      .badge-medium { background: #f39c12; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+      .badge-low { background: #27ae60; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+      .badge-default { background: #95a5a6; color: white; padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.85rem; }
+      .btn-small { padding: 0.4rem 0.8rem; font-size: 0.85rem; }
+    `;
+    document.head.appendChild(style);
+
+    // Initial load
+    loadAnomalies();
+  </script>
+</body>
+</html>

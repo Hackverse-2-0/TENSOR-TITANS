@@ -1,0 +1,26 @@
+version: '3.8'
+services:
+  backend:
+    build: ./backend
+    container_name: pds_backend
+    environment:
+      - FLASK_ENV=production
+      - SERVE_FRONTEND=true
+    ports:
+      - "5000:5000"
+    volumes:
+      - ./backend:/app
+      - ./frontend:/app/frontend:ro
+    restart: unless-stopped
+
+  nginx:
+    image: nginx:stable
+    container_name: pds_nginx
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend:/usr/share/nginx/html:ro
+      - ./deploy/nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    restart: unless-stopped

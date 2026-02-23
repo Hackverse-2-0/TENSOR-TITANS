@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Database Viewer - PDS Leak Detection Platform">  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />  <title>Database Viewer - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: white;
+      margin: 1rem 0;
+    }
+
+    .data-table thead {
+      background: #f5f5f5;
+      border-bottom: 2px solid #ddd;
+    }
+
+    .data-table th {
+      padding: 1rem;
+      text-align: left;
+      font-weight: 600;
+      color: #333;
+    }
+
+    .data-table td {
+      padding: 0.75rem 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .data-table tbody tr:hover {
+      background: #f9f9f9;
+    }
+
+    .severity-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .severity-critical {
+      background: #ff4444;
+      color: white;
+    }
+
+    .severity-high {
+      background: #ff9800;
+      color: white;
+    }
+
+    .severity-medium {
+      background: #ffc107;
+      color: #333;
+    }
+
+    .severity-low {
+      background: #4caf50;
+      color: white;
+    }
+
+    .status-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      background: #e0e0e0;
+      color: #333;
+    }
+
+    .status-delivered {
+      background: #4caf50;
+      color: white;
+    }
+
+    .status-pending {
+      background: #ff9800;
+      color: white;
+    }
+
+    .status-delayed {
+      background: #ff4444;
+      color: white;
+    }
+
+    .filter-bar {
+      display: flex;
+      gap: 1rem;
+      margin: 1.5rem 0;
+      flex-wrap: wrap;
+      padding: 1rem;
+      background: #f5f5f5;
+      border-radius: 4px;
+    }
+
+    .filter-bar input,
+    .filter-bar select {
+      padding: 0.5rem;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+    }
+
+    .pagination {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      margin: 2rem 0;
+    }
+
+    .pagination button {
+      padding: 0.5rem 1rem;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 4px;
+    }
+
+    .pagination button.active {
+      background: #007bff;
+      color: white;
+    }
+
+    .pagination button:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .export-btn {
+      background: #28a745;
+      color: white;
+      padding: 0.5rem 1rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+
+    .export-btn:hover {
+      background: #218838;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+    }
+
+    .no-data {
+      text-align: center;
+      padding: 2rem;
+      color: #999;
+      font-style: italic;
+    }
+  </style>
+</head>
+<body>
+  <main class="main-content">
+    <div class="container">
+      <!-- Page Header -->
+      <div class="page-header">
+        <h1>Database Viewer</h1>
+        <p>View and export all stored data</p>
+      </div>
+
+      <!-- Breadcrumb -->
+      <div class="breadcrumb">
+        <a href="dashboard.html">Home</a>
+        <span>/</span>
+        <span>Database Viewer</span>
+      </div>
+
+      <!-- Alert Container -->
+      <div id="alert-container"></div>
+
+      <!-- Tabs Navigation -->
+      <div class="card">
+        <div class="card-body">
+          <div style="display: flex; gap: 1rem; border-bottom: 2px solid #f0f0f0; margin-bottom: 2rem;">
+            <button class="tab-btn active" data-tab="stocks-tab" onclick="switchTab(this, 'stocks-tab')">
+              📦 Stock Data
+            </button>
+            <button class="tab-btn" data-tab="biometric-tab" onclick="switchTab(this, 'biometric-tab')">
+              👤 Biometric Logs
+            </button>
+            <button class="tab-btn" data-tab="delivery-tab" onclick="switchTab(this, 'delivery-tab')">
+              🚚 Deliveries
+            </button>
+            <button class="tab-btn" data-tab="anomalies-tab" onclick="switchTab(this, 'anomalies-tab')">
+              ⚠️ Anomalies
+            </button>
+          </div>
+
+          <!-- Stock Data Tab -->
+          <div id="stocks-tab" class="tab-content active">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <h3>📦 Stock Data</h3>
+              <button class="export-btn" onclick="exportStocks()">📥 Export JSON</button>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="stock-item-filter" placeholder="Filter by item code..." onkeyup="loadStocks()">
+              <button class="btn btn-primary" onclick="loadStocks()">Filter</button>
+              <button class="btn btn-secondary" onclick="clearStockFilters()">Clear</button>
+            </div>
+
+            <div id="stocks-container">
+              <div class="loading">Loading stock data...</div>
+            </div>
+
+            <div class="pagination">
+              <button onclick="stockPage = 0; loadStocks()" id="stock-prev" disabled>← Previous</button>
+              <span id="stock-page-info">Page 1</span>
+              <button onclick="stockPage++; loadStocks()" id="stock-next">Next →</button>
+            </div>
+          </div>
+
+          <!-- Biometric Logs Tab -->
+          <div id="biometric-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <h3>👤 Biometric Logs</h3>
+              <button class="export-btn" onclick="exportBiometric()">📥 Export JSON</button>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="bio-employee-filter" placeholder="Filter by employee ID..." onkeyup="loadBiometric()">
+              <select id="bio-status-filter" onchange="loadBiometric()">
+                <option value="">All Statuses</option>
+                <option value="present">Present</option>
+                <option value="absent">Absent</option>
+                <option value="late">Late</option>
+                <option value="leave">Leave</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadBiometric()">Filter</button>
+              <button class="btn btn-secondary" onclick="clearBioFilters()">Clear</button>
+            </div>
+
+            <div id="biometric-container">
+              <div class="loading">Loading biometric logs...</div>
+            </div>
+
+            <div class="pagination">
+              <button onclick="bioPage = 0; loadBiometric()" id="bio-prev" disabled>← Previous</button>
+              <span id="bio-page-info">Page 1</span>
+              <button onclick="bioPage++; loadBiometric()" id="bio-next">Next →</button>
+            </div>
+          </div>
+
+          <!-- Delivery Tab -->
+          <div id="delivery-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <h3>🚚 Deliveries</h3>
+              <button class="export-btn" onclick="exportDeliveries()">📥 Export JSON</button>
+            </div>
+
+            <div class="filter-bar">
+              <input type="text" id="del-item-filter" placeholder="Filter by item code..." onkeyup="loadDeliveries()">
+              <select id="del-status-filter" onchange="loadDeliveries()">
+                <option value="">All Statuses</option>
+                <option value="scheduled">Scheduled</option>
+                <option value="in-transit">In Transit</option>
+                <option value="delivered">Delivered</option>
+                <option value="delayed">Delayed</option>
+                <option value="cancelled">Cancelled</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadDeliveries()">Filter</button>
+              <button class="btn btn-secondary" onclick="clearDelFilters()">Clear</button>
+            </div>
+
+            <div id="delivery-container">
+              <div class="loading">Loading delivery data...</div>
+            </div>
+
+            <div class="pagination">
+              <button onclick="delPage = 0; loadDeliveries()" id="del-prev" disabled>← Previous</button>
+              <span id="del-page-info">Page 1</span>
+              <button onclick="delPage++; loadDeliveries()" id="del-next">Next →</button>
+            </div>
+          </div>
+
+          <!-- Anomalies Tab -->
+          <div id="anomalies-tab" class="tab-content">
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem;">
+              <h3>⚠️ Anomalies</h3>
+            </div>
+
+            <div class="filter-bar">
+              <select id="anom-severity-filter" onchange="loadAnomalies()">
+                <option value="">All Severities</option>
+                <option value="critical">Critical</option>
+                <option value="high">High</option>
+                <option value="medium">Medium</option>
+                <option value="low">Low</option>
+              </select>
+              <select id="anom-status-filter" onchange="loadAnomalies()">
+                <option value="">All Statuses</option>
+                <option value="open">Open</option>
+                <option value="investigating">Investigating</option>
+                <option value="resolved">Resolved</option>
+              </select>
+              <button class="btn btn-primary" onclick="loadAnomalies()">Filter</button>
+              <button class="btn btn-secondary" onclick="clearAnomFilters()">Clear</button>
+            </div>
+
+            <div id="anomalies-container">
+              <div class="loading">Loading anomalies...</div>
+            </div>
+
+            <div class="pagination">
+              <button onclick="anomPage = 0; loadAnomalies()" id="anom-prev" disabled>← Previous</button>
+              <span id="anom-page-info">Page 1</span>
+              <button onclick="anomPage++; loadAnomalies()" id="anom-next">Next →</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <script src="js/api.js?v=2"></script>
+  <script src="js/utils.js?v=2"></script>
+  <script>
+    // Pagination state
+    let stockPage = 0, bioPage = 0, delPage = 0, anomPage = 0;
+    const pageSize = 20;
+
+    // Initialize
+    initializePage();
+    setupAuthenticationSecurity();
+    loadAllData();
+
+    function loadAllData() {
+      loadStocks();
+      loadBiometric();
+      loadDeliveries();
+      loadAnomalies();
+    }
+
+    function switchTab(button, tabId) {
+      document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+      button.classList.add('active');
+      document.getElementById(tabId).classList.add('active');
+    }
+
+    // ==================== STOCK DATA ====================
+    async function loadStocks() {
+      try {
+        const itemFilter = document.getElementById('stock-item-filter')?.value || '';
+        const result = await api.getStocks(null, pageSize, stockPage * pageSize);
+        
+        let data = result.data || [];
+        if (itemFilter) {
+          data = data.filter(s => s.item_code.toLowerCase().includes(itemFilter.toLowerCase()));
+        }
+
+        renderStocksTable(data, result.total);
+        updatePagination('stock', stockPage, Math.ceil((result.total || 0) / pageSize));
+      } catch (error) {
+        document.getElementById('stocks-container').innerHTML = 
+          `<div class="no-data">Error loading stocks: ${error.message}</div>`;
+      }
+    }
+
+    function renderStocksTable(stocks, total) {
+      if (!stocks || stocks.length === 0) {
+        document.getElementById('stocks-container').innerHTML = 
+          '<div class="no-data">No stock data found</div>';
+        return;
+      }
+
+      let html = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Item Code</th>
+              <th>Item Name</th>
+              <th>Shop</th>
+              <th>Received</th>
+              <th>Sold</th>
+              <th>Remaining</th>
+              <th>Expected</th>
+              <th>Discrepancy</th>
+              <th>Recorded At</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      stocks.forEach(stock => {
+        html += `
+          <tr>
+            <td>${stock.item_code}</td>
+            <td>${stock.item_name}</td>
+            <td>${stock.shop_name || `Shop #${stock.shop_id}`}</td>
+            <td>${stock.quantity_received}</td>
+            <td>${stock.quantity_sold}</td>
+            <td>${stock.quantity_remaining}</td>
+            <td>${stock.expected_quantity}</td>
+            <td><strong>${stock.discrepancy}</strong></td>
+            <td>${new Date(stock.recorded_at).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('stocks-container').innerHTML = html;
+    }
+
+    async function exportStocks() {
+      try {
+        const result = await api.exportStocks();
+        downloadJSON(result.data, 'stocks.json');
+        showSuccess('Stocks exported successfully!');
+      } catch (error) {
+        showError('Error exporting stocks: ' + error.message);
+      }
+    }
+
+    function clearStockFilters() {
+      document.getElementById('stock-item-filter').value = '';
+      stockPage = 0;
+      loadStocks();
+    }
+
+    // ==================== BIOMETRIC LOGS ====================
+    async function loadBiometric() {
+      try {
+        const empFilter = document.getElementById('bio-employee-filter')?.value || '';
+        const result = await api.getBiometricLogs(null, pageSize, bioPage * pageSize);
+        
+        let data = result.data || [];
+        if (empFilter) {
+          data = data.filter(b => b.employee_id.toLowerCase().includes(empFilter.toLowerCase()));
+        }
+
+        renderBiometricTable(data, result.total);
+        updatePagination('bio', bioPage, Math.ceil((result.total || 0) / pageSize));
+      } catch (error) {
+        document.getElementById('biometric-container').innerHTML = 
+          `<div class="no-data">Error loading biometric logs: ${error.message}</div>`;
+      }
+    }
+
+    function renderBiometricTable(logs, total) {
+      if (!logs || logs.length === 0) {
+        document.getElementById('biometric-container').innerHTML = 
+          '<div class="no-data">No biometric logs found</div>';
+        return;
+      }
+
+      let html = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Employee ID</th>
+              <th>Employee Name</th>
+              <th>Shop</th>
+              <th>Check-in</th>
+              <th>Check-out</th>
+              <th>Duration (hrs)</th>
+              <th>Status</th>
+              <th>Recorded At</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      logs.forEach(log => {
+        html += `
+          <tr>
+            <td>${log.employee_id}</td>
+            <td>${log.employee_name}</td>
+            <td>${log.shop_name || `Shop #${log.shop_id}`}</td>
+            <td>${new Date(log.check_in_time).toLocaleString()}</td>
+            <td>${log.check_out_time ? new Date(log.check_out_time).toLocaleString() : '-'}</td>
+            <td>${log.duration_hours || '-'}</td>
+            <td>${log.status}</td>
+            <td>${new Date(log.recorded_at).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('biometric-container').innerHTML = html;
+    }
+
+    async function exportBiometric() {
+      try {
+        const result = await api.exportBiometric();
+        downloadJSON(result.data, 'biometric-logs.json');
+        showSuccess('Biometric logs exported successfully!');
+      } catch (error) {
+        showError('Error exporting biometric logs: ' + error.message);
+      }
+    }
+
+    function clearBioFilters() {
+      document.getElementById('bio-employee-filter').value = '';
+      document.getElementById('bio-status-filter').value = '';
+      bioPage = 0;
+      loadBiometric();
+    }
+
+    // ==================== DELIVERIES ====================
+    async function loadDeliveries() {
+      try {
+        const itemFilter = document.getElementById('del-item-filter')?.value || '';
+        const result = await api.getDeliveries(null, pageSize, delPage * pageSize);
+        
+        let data = result.data || [];
+        if (itemFilter) {
+          data = data.filter(d => d.item_code.toLowerCase().includes(itemFilter.toLowerCase()));
+        }
+
+        renderDeliveriesTable(data, result.total);
+        updatePagination('del', delPage, Math.ceil((result.total || 0) / pageSize));
+      } catch (error) {
+        document.getElementById('delivery-container').innerHTML = 
+          `<div class="no-data">Error loading deliveries: ${error.message}</div>`;
+      }
+    }
+
+    function renderDeliveriesTable(deliveries, total) {
+      if (!deliveries || deliveries.length === 0) {
+        document.getElementById('delivery-container').innerHTML = 
+          '<div class="no-data">No delivery data found</div>';
+        return;
+      }
+
+      let html = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Delivery ID</th>
+              <th>Item Code</th>
+              <th>Shop</th>
+              <th>Scheduled Qty</th>
+              <th>Delivered Qty</th>
+              <th>Variance %</th>
+              <th>Days Delayed</th>
+              <th>Status</th>
+              <th>Scheduled Date</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      deliveries.forEach(del => {
+        const statusClass = `status-${del.status}`;
+        html += `
+          <tr>
+            <td>${del.delivery_id}</td>
+            <td>${del.item_code}</td>
+            <td>${del.shop_name || `Shop #${del.shop_id}`}</td>
+            <td>${del.scheduled_quantity}</td>
+            <td>${del.delivered_quantity || 0}</td>
+            <td>${del.quantity_variance || 0}%</td>
+            <td>${del.days_delayed || 0}</td>
+            <td><span class="status-badge ${statusClass}">${del.status}</span></td>
+            <td>${new Date(del.scheduled_date).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('delivery-container').innerHTML = html;
+    }
+
+    async function exportDeliveries() {
+      try {
+        const result = await api.exportDeliveries();
+        downloadJSON(result.data, 'deliveries.json');
+        showSuccess('Deliveries exported successfully!');
+      } catch (error) {
+        showError('Error exporting deliveries: ' + error.message);
+      }
+    }
+
+    function clearDelFilters() {
+      document.getElementById('del-item-filter').value = '';
+      document.getElementById('del-status-filter').value = '';
+      delPage = 0;
+      loadDeliveries();
+    }
+
+    // ==================== ANOMALIES ====================
+    async function loadAnomalies() {
+      try {
+        const result = await api.getAllAnomalies(null, pageSize, anomPage * pageSize);
+        renderAnomaliesTable(result.data || [], result.total);
+        updatePagination('anom', anomPage, Math.ceil((result.total || 0) / pageSize));
+      } catch (error) {
+        document.getElementById('anomalies-container').innerHTML = 
+          `<div class="no-data">Error loading anomalies: ${error.message}</div>`;
+      }
+    }
+
+    function renderAnomaliesTable(anomalies, total) {
+      if (!anomalies || anomalies.length === 0) {
+        document.getElementById('anomalies-container').innerHTML = 
+          '<div class="no-data">No anomalies found</div>';
+        return;
+      }
+
+      let html = `
+        <table class="data-table">
+          <thead>
+            <tr>
+              <th>Type</th>
+              <th>Shop</th>
+              <th>Severity</th>
+              <th>Score</th>
+              <th>Description</th>
+              <th>Status</th>
+              <th>Detected At</th>
+            </tr>
+          </thead>
+          <tbody>
+      `;
+
+      anomalies.forEach(anom => {
+        const severityClass = `severity-${anom.severity}`;
+        html += `
+          <tr>
+            <td>${anom.anomaly_type}</td>
+            <td>${anom.shop_name || `Shop #${anom.shop_id}`}</td>
+            <td><span class="severity-badge ${severityClass}">${anom.severity}</span></td>
+            <td>${anom.anomaly_score}</td>
+            <td>${anom.description.substring(0, 50)}...</td>
+            <td>${anom.status}</td>
+            <td>${new Date(anom.detected_at).toLocaleString()}</td>
+          </tr>
+        `;
+      });
+
+      html += `
+          </tbody>
+        </table>
+      `;
+
+      document.getElementById('anomalies-container').innerHTML = html;
+    }
+
+    function clearAnomFilters() {
+      document.getElementById('anom-severity-filter').value = '';
+      document.getElementById('anom-status-filter').value = '';
+      anomPage = 0;
+      loadAnomalies();
+    }
+
+    // ==================== UTILITIES ====================
+    function updatePagination(prefix, currentPage, totalPages) {
+      document.getElementById(`${prefix}-page-info`).textContent = `Page ${currentPage + 1} of ${totalPages}`;
+      document.getElementById(`${prefix}-prev`).disabled = currentPage === 0;
+      document.getElementById(`${prefix}-next`).disabled = currentPage >= totalPages - 1;
+    }
+
+    function downloadJSON(data, filename) {
+      const json = JSON.stringify(data, null, 2);
+      const blob = new Blob([json], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+  </script>
+</body>
+</html>

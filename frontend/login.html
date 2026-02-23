@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="PDS Leak Detection Platform - Official Government Website">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Login - PDS Leak Detection Platform</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #0f2d4d 0%, #1a4d7a 50%, #20658d 100%);
+      min-height: 100vh;
+    }
+
+    /* Header */
+    .govt-header {
+      background: linear-gradient(90deg, #001f3f 0%, #003d66 100%);
+      color: white;
+      padding: 1.2rem 0;
+      border-bottom: 3px solid #00bcd4;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .header-container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    .govt-seal {
+      width: 60px;
+      height: 60px;
+      background: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2rem;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .header-text h1 {
+      font-size: 1.8rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      letter-spacing: 0.5px;
+    }
+
+    .header-text p {
+      font-size: 0.85rem;
+      color: #b3e5fc;
+      font-weight: 300;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+    }
+
+    .header-btn {
+      background: #00bcd4;
+      color: white;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 4px;
+      font-weight: 600;
+      font-size: 0.9rem;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .header-btn:hover {
+      background: #00acc1;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(0, 188, 212, 0.3);
+    }
+
+    .header-time {
+      font-size: 0.85rem;
+      color: #80deea;
+    }
+
+    /* Main Login Container */
+    .login-wrapper {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      min-height: calc(100vh - 120px);
+      align-items: center;
+    }
+
+    /* Left Side - Visual Content */
+    .login-visual {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 4rem 2rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .image-carousel {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      height: 400px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+      margin-bottom: 2rem;
+      z-index: 2;
+    }
+
+    .carousel-container {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .carousel-slide {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      opacity: 0;
+      transition: opacity 0.8s ease-in-out;
+    }
+
+    .carousel-slide.active {
+      opacity: 1;
+    }
+
+    .carousel-slide img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .carousel-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, rgba(0, 45, 77, 0.4) 0%, rgba(26, 77, 122, 0.2) 100%);
+      z-index: 1;
+    }
+
+    .carousel-caption {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: linear-gradient(180deg, rgba(0, 0, 0, 0) 0%, rgba(0, 0, 0, 0.7) 100%);
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      z-index: 2;
+    }
+
+    .carousel-caption h3 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.5rem;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .carousel-caption p {
+      font-size: 0.9rem;
+      margin: 0;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+      opacity: 0.95;
+    }
+
+    .carousel-controls {
+      position: absolute;
+      bottom: 15px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      gap: 10px;
+      z-index: 3;
+    }
+
+    .carousel-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.5);
+      cursor: pointer;
+      transition: all 0.3s ease;
+      border: 2px solid rgba(255, 255, 255, 0.7);
+    }
+
+    .carousel-dot.active {
+      background: #00bcd4;
+      border-color: #00bcd4;
+      transform: scale(1.3);
+    }
+
+    .carousel-btn {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      background: rgba(0, 188, 212, 0.8);
+      color: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      z-index: 3;
+      transition: all 0.3s ease;
+    }
+
+    .carousel-btn:hover {
+      background: #00bcd4;
+      transform: translateY(-50%) scale(1.1);
+    }
+
+    .carousel-btn.prev {
+      left: 15px;
+    }
+
+    .carousel-btn.next {
+      right: 15px;
+    }
+
+    .visual-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      color: white;
+    }
+
+    .visual-content h2 {
+      font-size: 2.2rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      line-height: 1.2;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .visual-content p {
+      font-size: 1rem;
+      color: #b3e5fc;
+      margin-bottom: 2rem;
+      max-width: 450px;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2rem;
+      max-width: 500px;
+    }
+
+    .feature-item {
+      background: rgba(255, 255, 255, 0.1);
+      padding: 1.5rem;
+      border-radius: 8px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(0, 188, 212, 0.3);
+      text-align: center;
+      transition: all 0.3s ease;
+    }
+
+    .feature-item:hover {
+      background: rgba(0, 188, 212, 0.2);
+      transform: translateY(-4px);
+      border-color: #00bcd4;
+    }
+
+    .feature-item i {
+      font-size: 2rem;
+      color: #00bcd4;
+      margin-bottom: 0.5rem;
+    }
+
+    .feature-item p {
+      font-size: 0.85rem;
+      margin: 0;
+    }
+
+    /* Hexagon Background */
+    .hexagon-bg {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+      grid-template-rows: repeat(auto-fit, minmax(120px, 1fr));
+      gap: 10px;
+      opacity: 0.1;
+    }
+
+    .hex {
+      background: radial-gradient(circle at 30% 30%, rgba(0, 188, 212, 0.8), rgba(0, 188, 212, 0.2));
+      clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%);
+      animation: float 6s ease-in-out infinite;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-10px); }
+    }
+
+    /* Right Side - Login Form */
+    .login-form-container {
+      background: white;
+      padding: 4rem 3rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      min-height: calc(100vh - 120px);
+      box-shadow: -8px 0 30px rgba(0, 0, 0, 0.2);
+    }
+
+    .form-header {
+      margin-bottom: 2.5rem;
+    }
+
+    .form-header .shield-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto 1rem;
+      background: linear-gradient(135deg, #00bcd4, #0097a7);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.5rem;
+      color: white;
+      box-shadow: 0 4px 15px rgba(0, 188, 212, 0.3);
+    }
+
+    .form-header h1 {
+      font-size: 2rem;
+      color: #001f3f;
+      margin-bottom: 0.5rem;
+      font-weight: 700;
+    }
+
+    .form-header p {
+      color: #666;
+      font-size: 0.95rem;
+      margin: 0;
+    }
+
+    .auth-form {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .form-group {
+      margin-bottom: 1.5rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.5rem;
+      color: #333;
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+    .form-group input {
+      width: 100%;
+      padding: 0.9rem 1rem;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 0.95rem;
+      transition: all 0.3s ease;
+      font-family: 'Segoe UI', sans-serif;
+    }
+
+    .form-group input:focus {
+      outline: none;
+      border-color: #00bcd4;
+      box-shadow: 0 0 0 3px rgba(0, 188, 212, 0.1);
+      background: rgba(0, 188, 212, 0.02);
+    }
+
+    .form-group input::placeholder {
+      color: #999;
+    }
+
+    .security-note {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 1.5rem;
+      padding: 0.8rem;
+      background: #f5f5f5;
+      border-left: 3px solid #00bcd4;
+      border-radius: 4px;
+    }
+
+    .security-note i {
+      color: #00bcd4;
+      font-size: 1rem;
+    }
+
+    .btn-login {
+      background: linear-gradient(135deg, #00bcd4 0%, #0097a7 100%);
+      color: white;
+      padding: 1rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      letter-spacing: 0.5px;
+      margin-top: 0.5rem;
+      box-shadow: 0 4px 15px rgba(0, 188, 212, 0.2);
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0, 188, 212, 0.3);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .form-footer {
+      margin-top: 2rem;
+      text-align: center;
+      border-top: 1px solid #e0e0e0;
+      padding-top: 1.5rem;
+    }
+
+    .form-footer p {
+      color: #666;
+      font-size: 0.9rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .form-footer a {
+      color: #00bcd4;
+      text-decoration: none;
+      font-weight: 600;
+      transition: all 0.3s ease;
+    }
+
+    .form-footer a:hover {
+      color: #0097a7;
+      text-decoration: underline;
+    }
+
+    .govt-seal-footer {
+      text-align: center;
+      margin-top: 1.5rem;
+      font-size: 0.8rem;
+      color: #999;
+    }
+
+    /* Alert */
+    .alert {
+      padding: 1rem;
+      border-radius: 6px;
+      margin-bottom: 1.5rem;
+      animation: slideDown 0.3s ease;
+    }
+
+    @keyframes slideDown {
+      from {
+        opacity: 0;
+        transform: translateY(-10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .alert-success {
+      background: #e8f5e9;
+      color: #2e7d32;
+      border-left: 4px solid #4caf50;
+    }
+
+    .alert-danger {
+      background: #ffebee;
+      color: #c62828;
+      border-left: 4px solid #f44336;
+    }
+
+    /* Footer */
+    .login-footer {
+      background: #001f3f;
+      color: white;
+      padding: 2rem;
+      text-align: center;
+      font-size: 0.85rem;
+      border-top: 3px solid #00bcd4;
+    }
+
+    .login-footer p {
+      margin: 0.5rem 0;
+    }
+
+    .login-footer a {
+      color: #00bcd4;
+      text-decoration: none;
+      margin: 0 1rem;
+    }
+
+    /* Responsive */
+    @media (max-width: 1024px) {
+      .login-wrapper {
+        grid-template-columns: 1fr;
+      }
+
+      .login-visual {
+        min-height: 450px;
+        padding: 2rem;
+      }
+
+      .image-carousel {
+        max-width: 100%;
+        height: 350px;
+      }
+
+      .login-form-container {
+        min-height: auto;
+        padding: 2.5rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+      .login-visual {
+        min-height: 380px;
+        padding: 1.5rem;
+      }
+
+      .image-carousel {
+        height: 300px;
+        margin-bottom: 1.5rem;
+      }
+
+      .visual-content h2 {
+        font-size: 1.8rem;
+      }
+
+      .visual-content p {
+        font-size: 0.9rem;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+      }
+
+      .feature-item {
+        padding: 1rem;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .header-text h1 {
+        font-size: 1.3rem;
+      }
+
+      .header-right {
+        width: 100%;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .login-visual {
+        min-height: 300px;
+      }
+
+      .image-carousel {
+        height: 250px;
+        margin-bottom: 1rem;
+        border-radius: 8px;
+      }
+
+      .carousel-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .visual-content h2 {
+        font-size: 1.6rem;
+      }
+
+      .visual-content p {
+        font-size: 0.85rem;
+      }
+
+      .feature-grid {
+        grid-template-columns: 1fr;
+        max-width: 100%;
+      }
+
+      .feature-item {
+        padding: 0.8rem;
+      }
+
+      .feature-item i {
+        font-size: 1.5rem;
+      }
+
+      .feature-item p {
+        font-size: 0.75rem;
+      }
+
+      .form-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .form-header .shield-icon {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+      }
+
+      .login-form-container {
+        padding: 1.5rem;
+      }
+
+      .form-group input {
+        padding: 0.75rem;
+        font-size: 16px; /* Prevent zoom on iOS */
+      }
+    }
+  </style>
+</head>
+<body>
+  <!-- Government Header -->
+  <div class="govt-header">
+    <div class="header-container">
+      <div class="header-left">
+        <div class="govt-seal">🛡️</div>
+        <div class="header-text">
+          <h1>PDS Leak Detection</h1>
+          <p>Government of India | Ministry of Consumer Affairs, Public Distribution & Food</p>
+        </div>
+      </div>
+      <div class="header-right">
+        <div class="header-time" id="current-time"></div>
+        <a href="register.html" class="header-btn">Register</a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Login Section -->
+  <div class="login-wrapper">
+    <!-- Left Visual Section -->
+    <div class="login-visual">
+      <div class="hexagon-bg">
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+        <div class="hex"></div>
+      </div>
+      
+      <!-- Image Carousel -->
+      <div class="image-carousel">
+        <div class="carousel-container" id="carousel-container">
+          <!-- Slides will be dynamically inserted here -->
+        </div>
+        <div class="carousel-overlay"></div>
+        
+        <button class="carousel-btn prev" id="carousel-prev"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn next" id="carousel-next"><i class="fas fa-chevron-right"></i></button>
+        
+        <div class="carousel-controls" id="carousel-controls">
+          <!-- Dots will be dynamically inserted here -->
+        </div>
+      </div>
+
+      <div class="visual-content">
+        <h2>Secure Leak Detection</h2>
+        <p>Protect the Public Distribution System with advanced anomaly detection</p>
+        <div class="feature-grid">
+          <div class="feature-item">
+            <i class="fas fa-shield-alt"></i>
+            <p>Secure</p>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-chart-line"></i>
+            <p>Real-time</p>
+          </div>
+          <div class="feature-item">
+            <i class="fas fa-lock"></i>
+            <p>Encrypted</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Right Form Section -->
+    <div class="login-form-container">
+      <div class="form-header">
+        <div class="shield-icon">🔐</div>
+        <h1>Login</h1>
+        <p>Secure government portal access</p>
+      </div>
+
+      <div id="alert-container"></div>
+
+      <form id="login-form" class="auth-form">
+        <div class="form-group">
+          <label for="username"><i class="fas fa-user"></i> Username</label>
+          <input type="text" id="username" name="username" required placeholder="Enter your username" autocomplete="username">
+        </div>
+
+        <div class="form-group">
+          <label for="password"><i class="fas fa-lock"></i> Password</label>
+          <input type="password" id="password" name="password" required placeholder="Enter your password" autocomplete="current-password">
+        </div>
+
+        <div class="security-note">
+          <i class="fas fa-info-circle"></i>
+          <span>Use your assigned credentials to access the platform</span>
+        </div>
+
+        <button type="submit" class="btn-login">Login Securely</button>
+      </form>
+
+      <div class="form-footer">
+        <p>Don't have an account?</p>
+        <a href="register.html">Register for access</a>
+        <div class="govt-seal-footer">
+          🇮🇳 Official Government Portal | Secure & Encrypted
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <div class="login-footer">
+    <p>&copy; 2026 Government of India. All rights reserved.</p>
+    <p>Ministry of Consumer Affairs, Public Distribution &amp; Food | Secure Portal</p>
+    <div>
+      <a href="#">Privacy Policy</a> | <a href="#">Terms of Service</a> | <a href="#">Security</a> | <a href="#">Help Center</a>
+    </div>
+  </div>
+
+  <script src="js/api.js"></script>
+  <script src="js/utils.js"></script>
+  <script>
+    // Security: Prevent authenticated users from accessing login page
+    (function() {
+      // Check if user is already authenticated
+      if (isAuthenticated() && localStorage.getItem('access_token')) {
+        // Clear any stale session data
+        const sessionData = sessionStorage.getItem('authTabLeft');
+        if (!sessionData || Date.now() - parseInt(sessionData) > 5000) {
+          // Session is fresh - redirect to dashboard
+          window.location.href = 'dashboard.html';
+          return;
+        }
+      }
+      
+      // Clear any sensitive data from previous sessions on page load
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', performSecurityCleanup);
+      } else {
+        performSecurityCleanup();
+      }
+    })();
+
+    function performSecurityCleanup() {
+      // Don't clear auth tokens on page load if already authenticated
+      // This prevents accidental logout when returning from other pages
+    }
+
+    // Image Carousel Data
+    const carouselImages = [
+      {
+        src: 'images/pds-distribution-1.jpg',
+        alt: 'Ration Distribution Center - Fair Price Shop Operations',
+        title: 'Fair Price Shops',
+        description: 'Beneficiaries receiving subsidized rations'
+      },
+      {
+        src: 'images/pds-distribution-2.jpg',
+        alt: 'Stock Management and Inventory Control',
+        title: 'Stock Management',
+        description: 'Organized warehousing and inventory tracking'
+      },
+      {
+        src: 'images/pds-distribution-placeholder-1.svg',
+        alt: 'Ration Distribution Center',
+        title: 'Distribution Network',
+        description: 'Ensuring fair and transparent distribution'
+      },
+      {
+        src: 'images/pds-distribution-placeholder-2.svg',
+        alt: 'Stock Management System',
+        title: 'Inventory Control',
+        description: 'Real-time stock monitoring and management'
+      }
+    ];
+
+    // Initialize Carousel
+    class ImageCarousel {
+      constructor(containerSelector, controlsSelector, prevBtnSelector, nextBtnSelector, images) {
+        this.container = document.querySelector(containerSelector);
+        this.controlsContainer = document.querySelector(controlsSelector);
+        this.prevBtn = document.querySelector(prevBtnSelector);
+        this.nextBtn = document.querySelector(nextBtnSelector);
+        this.images = images;
+        this.currentSlide = 0;
+        this.autoPlayInterval = null;
+
+        this.init();
+      }
+
+      init() {
+        this.renderSlides();
+        this.renderControls();
+        this.attachEventListeners();
+        this.autoPlay();
+      }
+
+      renderSlides() {
+        this.container.innerHTML = this.images.map((img, index) => `
+          <div class="carousel-slide ${index === 0 ? 'active' : ''}">
+            <img src="${img.src}" alt="${img.alt}" loading="lazy" onerror="this.parentElement.innerHTML='<div style=\"display:flex;align-items:center;justify-content:center;width:100%;height:100%;background:linear-gradient(135deg,#0097a7,#00bcd4);color:white;font-size:1.2rem;text-align:center;padding:2rem;\"><div><i style=\"font-size:3rem;margin-bottom:1rem;\" class=\"fas fa-image\"></i><br>Add Images to images/folder<br><small style=\"font-size:0.9rem;margin-top:0.5rem;\">Use image-converter.html tool</small></div></div>'">
+            <div class="carousel-caption">
+              <h3>${img.title || 'PDS Operations'}</h3>
+              <p>${img.description || 'Securing the Public Distribution System'}</p>
+            </div>
+          </div>
+        `).join('');
+      }
+
+      renderControls() {
+        this.controlsContainer.innerHTML = this.images.map((_, index) => `
+          <div class="carousel-dot ${index === 0 ? 'active' : ''}" data-slide="${index}"></div>
+        `).join('');
+
+        document.querySelectorAll('.carousel-dot').forEach(dot => {
+          dot.addEventListener('click', (e) => {
+            this.currentSlide = parseInt(e.target.dataset.slide);
+            this.updateSlide();
+            this.resetAutoPlay();
+          });
+        });
+      }
+
+      attachEventListeners() {
+        this.prevBtn.addEventListener('click', () => {
+          this.prev();
+          this.resetAutoPlay();
+        });
+        this.nextBtn.addEventListener('click', () => {
+          this.next();
+          this.resetAutoPlay();
+        });
+      }
+
+      prev() {
+        this.currentSlide = this.currentSlide === 0 ? this.images.length - 1 : this.currentSlide - 1;
+        this.updateSlide();
+      }
+
+      next() {
+        this.currentSlide = this.currentSlide === this.images.length - 1 ? 0 : this.currentSlide + 1;
+        this.updateSlide();
+      }
+
+      updateSlide() {
+        document.querySelectorAll('.carousel-slide').forEach(slide => slide.classList.remove('active'));
+        document.querySelectorAll('.carousel-dot').forEach(dot => dot.classList.remove('active'));
+
+        document.querySelectorAll('.carousel-slide')[this.currentSlide].classList.add('active');
+        document.querySelectorAll('.carousel-dot')[this.currentSlide].classList.add('active');
+      }
+
+      autoPlay() {
+        this.autoPlayInterval = setInterval(() => {
+          this.next();
+          this.updateSlide();
+        }, 5000);
+      }
+
+      resetAutoPlay() {
+        clearInterval(this.autoPlayInterval);
+        this.autoPlay();
+      }
+    }
+
+    // Initialize carousel when DOM is ready
+    document.addEventListener('DOMContentLoaded', () => {
+      if (document.getElementById('carousel-container')) {
+        new ImageCarousel(
+          '#carousel-container',
+          '#carousel-controls',
+          '#carousel-prev',
+          '#carousel-next',
+          carouselImages
+        );
+      }
+    });
+
+    // Update current time
+    function updateTime() {
+      const now = new Date();
+      document.getElementById('current-time').textContent = now.toLocaleString('en-IN');
+    }
+    updateTime();
+    setInterval(updateTime, 1000);
+
+    // Login security configuration
+    const loginConfig = {
+      maxAttempts: 5,
+      lockoutDuration: 15 * 60 * 1000, // 15 minutes
+      attemptWindow: 5 * 60 * 1000, // 5 minutes
+    };
+
+    // Rate limiting functions
+    function getLoginAttempts() {
+      const attempts = localStorage.getItem('loginAttempts');
+      if (!attempts) return { count: 0, timestamp: Date.now(), blockedUntil: null };
+      return JSON.parse(attempts);
+    }
+
+    function updateLoginAttempts(failed = false) {
+      const now = Date.now();
+      let attempts = getLoginAttempts();
+
+      if (attempts.blockedUntil && now < attempts.blockedUntil) {
+        return { blocked: true, remaining: Math.ceil((attempts.blockedUntil - now) / 1000) };
+      }
+
+      if (now - attempts.timestamp > loginConfig.attemptWindow) {
+        attempts = { count: 0, timestamp: now, blockedUntil: null };
+      }
+
+      if (failed) {
+        attempts.count++;
+        if (attempts.count >= loginConfig.maxAttempts) {
+          attempts.blockedUntil = now + loginConfig.lockoutDuration;
+        }
+      } else {
+        attempts = { count: 0, timestamp: now, blockedUntil: null };
+      }
+
+      localStorage.setItem('loginAttempts', JSON.stringify(attempts));
+      return attempts;
+    }
+
+    function isLoginBlocked() {
+      const attempts = getLoginAttempts();
+      return attempts.blockedUntil && Date.now() < attempts.blockedUntil;
+    }
+
+    // Handle login form submission with security
+    document.getElementById('login-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      const username = document.getElementById('username').value;
+      const password = document.getElementById('password').value;
+      const alertContainer = document.getElementById('alert-container');
+      const loginBtn = document.querySelector('.btn-login');
+
+      // Check if account is locked
+      if (isLoginBlocked()) {
+        const attempts = getLoginAttempts();
+        const remainingSeconds = Math.ceil((attempts.blockedUntil - Date.now()) / 1000);
+        const minutes = Math.ceil(remainingSeconds / 60);
+        showAlert(
+          `<i class="fas fa-lock"></i> Too many login attempts. Please try again in ${minutes} minute(s).`,
+          'danger',
+          alertContainer
+        );
+        loginBtn.disabled = true;
+        return;
+      }
+
+      // Validate input
+      if (!username.trim() || !password.trim()) {
+        showAlert(
+          '<i class="fas fa-exclamation-circle"></i> Please enter both username and password.',
+          'danger',
+          alertContainer
+        );
+        return;
+      }
+
+      // Disable button and show loading state
+      loginBtn.disabled = true;
+      loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Authenticating...';
+
+      try {
+        // Clear previous session before login
+        sessionStorage.clear();
+        const result = await api.login(username, password);
+        
+        // Reset login attempts on successful login
+        updateLoginAttempts(false);
+        
+        // Store login timestamp in sessionStorage for tab security
+        sessionStorage.setItem('authSessionStart', Date.now());
+        sessionStorage.setItem('authTabActive', 'true');
+        
+        showAlert('<i class="fas fa-check-circle"></i> Login successful! Redirecting...', 'success', alertContainer);
+        setTimeout(() => {
+          // Use replace to prevent back button to login page
+          window.location.replace('dashboard.html');
+        }, 1500);
+      } catch (error) {
+        // Record failed attempt
+        updateLoginAttempts(true);
+        const attempts = getLoginAttempts();
+        const remainingAttempts = loginConfig.maxAttempts - attempts.count;
+        
+        let message = '<i class="fas fa-exclamation-circle"></i> ' + error.message;
+        if (remainingAttempts > 0 && remainingAttempts < loginConfig.maxAttempts) {
+          message += ` (${remainingAttempts} attempt${remainingAttempts !== 1 ? 's' : ''} remaining)`;
+        }
+        
+        showAlert(message, 'danger', alertContainer);
+        loginBtn.disabled = false;
+        loginBtn.innerHTML = 'Login Securely';
+      }
+    });
+
+    function showAlert(message, type, container) {
+      container.innerHTML = `<div class="alert alert-${type}" role="alert">${message}</div>`;
+      if (container.firstChild) {
+        container.firstChild.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }
+    }
+  </script>
+</body>
+</html>
